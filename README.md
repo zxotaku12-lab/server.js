@@ -18,6 +18,22 @@ Dono ek hi process me chal sakte hain: `DISCORD_TOKEN` set ho to Gateway bot apn
 | `/coinflip` | Heads ya tails |
 | `/roll max:<number>` | Dice pheko (default 1–100) |
 | `/rps choice:🪨/📄/✂️` | Rock-Paper-Scissors bot ke against |
+| `/kick user:<user> reason:[reason]` | 🔒 Member ko kick karo |
+| `/ban user:<user> reason:[reason] delete_days:[0-7]` | 🔒 Member ko ban karo |
+| `/timeout user:<user> minutes:<0-40320> reason:[reason]` | 🔒 Timeout karo / hatao (`minutes: 0`) |
+| `/purge count:<1-100> user:[user]` | 🔒 Bulk-delete, optional user filter |
+
+🔒 = **Gateway-only**. Inhe asli `guild` object chahiye (roles, permissions, `bulkDelete`), jo HTTP interactions mode me nahi milta — wahan ye saaf message deti hain ki Gateway bot online karo, chupchap fail nahi hoti.
+
+Har moderation command me ye sab built-in hai:
+
+- `setDefaultMemberPermissions` + `setDMPermission(false)` → Discord UI bina permission waalon ko command dikhata hi nahi
+- moderator **aur** bot dono ki permission check
+- **role hierarchy** — apne se upar/braabar waale role ya server owner pe action refuse
+- self-target aur bot-target refuse
+- audit log reason me actor ka naam + ID
+- log channel pe embed (agar settings me `logChannelId` ho)
+- `/purge` count ko Discord ki 100 limit pe **clamp** karta hai, aur `deferReply` karta hai
 
 Commands `commands/` folder me hain. Naya file daalo, command **apne aap** teen jagah pahunch jaati hai — Gateway bot, HTTP endpoint, aur `npm run register`. Dobara kahin hardcode nahi karna padta.
 
@@ -78,13 +94,19 @@ DISCORD_TOKEN=xxx CLIENT_ID=yyy npm run register                  # global (~1 g
 DISCORD_TOKEN=xxx CLIENT_ID=yyy GUILD_ID=zzz npm run register     # instant
 ```
 
-## Self-check (bina Discord ke test)
+## Tests (bina Discord ke)
 
 ```bash
-npm run check
+npm test          # dono suites (85 checks)
+npm run test:mod  # sirf moderation unit tests  (49 checks)
+npm run check     # sirf integration self-check  (36 checks)
 ```
 
-Ye ek asli ed25519 keypair bana kar server ko child process me start karta hai, phir **signed / unsigned / tampered** requests aur har slash command ko test karta hai (35 checks). Discord account ya token ki zaroorat nahi.
+**`npm run check`** — ek asli ed25519 keypair bana kar server ko child process me start karta hai, phir **signed / unsigned / tampered** requests, har slash command aur saare pages test karta hai.
+
+**`npm run test:mod`** — moderation commands ko asli `guild` chahiye jo Discord ke bina nahi milta, isliye guild/member/channel/permissions ke **mocks** banake `execute()` ko directly call karta hai. Isse real logic test hota hai: permission denial, role hierarchy, owner/self/bot protection, `delete_days → deleteMessageSeconds` conversion, 100-message clamp, user-filtered bulk delete, bulkDelete failure handling, aur log-channel integration.
+
+Dono suites exit code 1 dete hain fail hone par, isliye CI (`.github/workflows/ci.yml`) inhe Node **18 / 20 / 22** pe chalata hai.
 
 ## Project layout
 
@@ -94,10 +116,12 @@ bot.js                 discord.js Gateway client: welcome, auto-role, XP/levelin
 commands/index.js      shared command registry (teeno consumers isi ko use karte hain)
 commands/core.js       /ping /hello /help
 commands/fun.js        /8ball /coinflip /roll /rps
+commands/mod.js        /kick /ban /timeout /purge  (Gateway-only, permission + hierarchy checks)
 lib/http-interaction.js  raw HTTP payload -> discord.js-jaisa interaction shim
 register-commands.js   Discord API pe commands register karna
 store.js               chhota JSON storage helper (data/ folder)
-scripts/selfcheck.js   local end-to-end test harness
+scripts/selfcheck.js   integration test harness (HTTP + signatures)
+scripts/mod.test.js    moderation unit tests (mock guild)
 ```
 
 ### Naya command kaise add karein
@@ -117,7 +141,9 @@ module.exports = {
 
 Bas. Registry use khud utha legi — Gateway, HTTP aur register script teeno me.
 
-> **Note:** jo features sirf Gateway pe possible hain (role dena, kick/ban, `followUp`, `editReply`), wo HTTP mode pe clear error dete hain — chupchap fail nahi hote. Aise commands par `guildOnly: true` laga do to DM me bhi saaf message milega.
+> **Note:** jo features sirf Gateway pe possible hain (role dena, kick/ban, `followUp`, `editReply`), wo HTTP mode pe clear error dete hain — chupchap fail nahi hote. Aise commands par `guildOnly: true` laga do to DM me bhi saaf message milega. `commands/mod.js` iska reference implementation hai.
+
+Moderation commands ke liye bot ke role ko target roles se **upar** rakho aur ye permissions do: Kick Members, Ban Members, Moderate Members, Manage Messages.
 
 ## Data storage
 

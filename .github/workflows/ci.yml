@@ -39,6 +39,9 @@ jobs:
           [ "$fail" -eq 0 ] && echo "✅ sab files parse ho gayi"
           exit $fail
 
+      - name: Moderation unit tests (mock guild — permissions, hierarchy, clamp, logs)
+        run: npm run test:mod
+
       - name: Run self-check (signature verification + saari commands + pages)
         run: npm run check
 

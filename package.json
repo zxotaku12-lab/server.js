@@ -7,7 +7,9 @@
     "start": "node server.js",
     "bot": "node bot.js",
     "register": "node register-commands.js",
-    "check": "node scripts/selfcheck.js"
+    "test:mod": "node scripts/mod.test.js",
+    "check": "node scripts/selfcheck.js",
+    "test": "node scripts/mod.test.js && node scripts/selfcheck.js"
   },
   "engines": {
     "node": ">=18"
