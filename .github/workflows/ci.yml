@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  selfcheck:
+    name: Self-check (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # Node 18 isliye zaroori hai: package.json "engines": ">=18" claim karta hai,
+        # aur pehle register-commands.js me top-level await tha jo Node 18 pe SyntaxError deta tha.
+        node: [18, 20, 22]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Syntax check (har file parse hoti hai)
+        run: |
+          fail=0
+          for f in $(git ls-files '*.js'); do
+            if ! node --check "$f"; then echo "❌ $f"; fail=1; fi
+          done
+          [ "$fail" -eq 0 ] && echo "✅ sab files parse ho gayi"
+          exit $fail
+
+      - name: Moderation unit tests (mock guild — permissions, hierarchy, clamp, logs)
+        run: npm run test:mod
+
+      - name: Settings unit tests (permission strings, cache coherence, multi-guild)
+        run: npm run test:settings
+
+      - name: Leveling unit tests (XP maths, /rank, /leaderboard)
+        run: npm run test:level
+
+      - name: Run self-check (signature verification + saari commands + pages)
+        run: npm run check
+
+      - name: Boot smoke test (Gateway token ke bina)
+        run: |
+          PORT=3999 node server.js &
+          pid=$!
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:3999/health > /dev/null && break
+            sleep 1
+          done
+          curl -sf http://127.0.0.1:3999/health | tee /tmp/health.json
+          echo
+          node -e "
+            const h=require('/tmp/health.json');
+            if(h.status!=='ok') throw new Error('health not ok');
+            if(h.commandCount<7) throw new Error('commands missing: '+h.commandCount);
+            if(h.gateway.ready) throw new Error('gateway should be off without token');
+            console.log('✅ smoke test pass');
+          "
+          kill $pid 2>/dev/null || true
