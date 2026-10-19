@@ -5,13 +5,29 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "register": "node register-commands.js"
+    "bot": "node bot.js",
+    "register": "node register-commands.js",
+    "test:mod": "node scripts/mod.test.js",
+    "test:settings": "node scripts/settings.test.js",
+    "test:level": "node scripts/level.test.js",
+    "check": "node scripts/selfcheck.js",
+    "test": "node scripts/mod.test.js && node scripts/settings.test.js && node scripts/level.test.js && node scripts/selfcheck.js"
   },
   "engines": {
     "node": ">=18"
   },
   "dependencies": {
+    "discord.js": "^14.27.0",
     "express": "^4.19.2",
     "tweetnacl": "^1.0.3"
-  }
+  },
+  "keywords": [
+    "discord",
+    "discord.js",
+    "bot",
+    "moderation",
+    "leveling",
+    "express"
+  ],
+  "license": "MIT"
 }
