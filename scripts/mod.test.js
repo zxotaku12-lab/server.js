@@ -16,6 +16,7 @@ const { PermissionFlagsBits } = require('discord.js');
 
 const ROOT = path.join(__dirname, '..');
 const MOD = require(path.join(ROOT, 'commands', 'mod.js'));
+const settingsLib = require(path.join(ROOT, 'lib', 'settings.js'));
 const SETTINGS_FILE = path.join(ROOT, 'data', 'settings.json');
 
 let passed = 0;
@@ -190,9 +191,15 @@ const content = (i) => (i.calls.reply[0]?.content ?? '') + (i.calls.edit[0]?.con
 async function main() {
   console.log('\n🛡️  Moderation unit tests (mock guild)\n');
 
-  // settings.json ko temporarily control karo (log-channel test ke liye), baad me restore
+  // settings.json ko temporarily control karo (log-channel test ke liye), baad me restore.
+  // lib/settings.js in-memory cache rakhta hai (bot.js har event pe disk na padhe),
+  // isliye bahar se likhne ke baad invalidate() zaroori hai.
   const backup = fs.existsSync(SETTINGS_FILE) ? fs.readFileSync(SETTINGS_FILE, 'utf8') : null;
   fs.mkdirSync(path.dirname(SETTINGS_FILE), { recursive: true });
+  const writeSettings = (obj) => {
+    fs.writeFileSync(SETTINGS_FILE, JSON.stringify(obj));
+    settingsLib.invalidate();
+  };
 
   try {
     /* ---------- 0. shape ---------- */
@@ -426,7 +433,7 @@ async function main() {
     /* ---------- 6. log channel ---------- */
     console.log('\n6) Log channel integration');
     {
-      fs.writeFileSync(SETTINGS_FILE, JSON.stringify({ guild1: { logChannelId: 'nope-not-in-cache' } }));
+      writeSettings({ guild1: { logChannelId: 'nope-not-in-cache' } });
       const target = makeTarget({ id: '910' });
       const guild = makeGuild({ member: makeMember({ target }), logChannel: true });
       const i = makeInteraction({ commandName: 'kick', guild, options: { user: target, reason: 'test' } });
@@ -439,7 +446,7 @@ async function main() {
       check('settings me galat logChannelId ho to crash nahi hota', threw === null && guild.calls.kick.length === 1, threw?.message);
     }
     {
-      fs.writeFileSync(SETTINGS_FILE, JSON.stringify({ guild1: { logChannelId: 'logchan' } }));
+      writeSettings({ guild1: { logChannelId: 'logchan' } });
       const target = makeTarget({ id: '911', username: 'logged' });
       const guild = makeGuild({ member: makeMember({ target }), logChannel: true });
       const i = makeInteraction({ commandName: 'kick', guild, options: { user: target, reason: 'log test' } });
@@ -454,7 +461,7 @@ async function main() {
         fieldsJson.slice(0, 160));
     }
     {
-      fs.writeFileSync(SETTINGS_FILE, JSON.stringify({}));
+      writeSettings({});
       const target = makeTarget({ id: '912' });
       const guild = makeGuild({ member: makeMember({ target }), logChannel: true });
       const i = makeInteraction({ commandName: 'ban', guild, options: { user: target } });
@@ -469,6 +476,7 @@ async function main() {
   } finally {
     if (backup === null) fs.rmSync(SETTINGS_FILE, { force: true });
     else fs.writeFileSync(SETTINGS_FILE, backup);
+    settingsLib.invalidate();
   }
 
   console.log(`\n${'─'.repeat(56)}`);

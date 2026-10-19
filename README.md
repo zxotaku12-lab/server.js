@@ -22,6 +22,12 @@ Dono ek hi process me chal sakte hain: `DISCORD_TOKEN` set ho to Gateway bot apn
 | `/ban user:<user> reason:[reason] delete_days:[0-7]` | 🔒 Member ko ban karo |
 | `/timeout user:<user> minutes:<0-40320> reason:[reason]` | 🔒 Timeout karo / hatao (`minutes: 0`) |
 | `/purge count:<1-100> user:[user]` | 🔒 Bulk-delete, optional user filter |
+| `/setwelcome channel:[channel]` | ⚙️ Welcome channel set karo (khaali = band) · Manage Server |
+| `/setautorole role:[role]` | ⚙️ Join pe auto-role (khaali = band) · Manage Roles |
+| `/setlogs channel:[channel]` | ⚙️ Log channel — join/leave + mod actions · Manage Server |
+| `/settings` | ⚙️ Current config dekho (sabke liye, koi permission nahi) |
+| `/rank user:[user]` | 📊 Level, XP, rank aur next-level progress bar |
+| `/leaderboard` | 🏆 Top 10 XP leaderboard |
 
 🔒 = **Gateway-only**. Inhe asli `guild` object chahiye (roles, permissions, `bulkDelete`), jo HTTP interactions mode me nahi milta — wahan ye saaf message deti hain ki Gateway bot online karo, chupchap fail nahi hoti.
 
@@ -97,16 +103,24 @@ DISCORD_TOKEN=xxx CLIENT_ID=yyy GUILD_ID=zzz npm run register     # instant
 ## Tests (bina Discord ke)
 
 ```bash
-npm test          # dono suites (85 checks)
-npm run test:mod  # sirf moderation unit tests  (49 checks)
-npm run check     # sirf integration self-check  (36 checks)
+npm test               # chaaron suites (199 checks)
+npm run test:mod       # moderation unit tests      (49)
+npm run test:settings  # settings unit tests        (51)
+npm run test:level     # leveling + XP maths tests  (63)
+npm run check          # integration self-check     (36)
 ```
 
 **`npm run check`** — ek asli ed25519 keypair bana kar server ko child process me start karta hai, phir **signed / unsigned / tampered** requests, har slash command aur saare pages test karta hai.
 
 **`npm run test:mod`** — moderation commands ko asli `guild` chahiye jo Discord ke bina nahi milta, isliye guild/member/channel/permissions ke **mocks** banake `execute()` ko directly call karta hai. Isse real logic test hota hai: permission denial, role hierarchy, owner/self/bot protection, `delete_days → deleteMessageSeconds` conversion, 100-message clamp, user-filtered bulk delete, bulkDelete failure handling, aur log-channel integration.
 
-Dono suites exit code 1 dete hain fail hone par, isliye CI (`.github/workflows/ci.yml`) inhe Node **18 / 20 / 22** pe chalata hai.
+**`npm run test:settings`** — settings commands ke liye, aur specially isliye kyunki HTTP mode me `guild` object nahi milta. Test karta hai ki Discord ke `member.permissions` **string** se permission enforcement REAL rehti hai (koi bhi settings na badal sake), Gateway mode me channel/role validation, `@everyone` aur role-hierarchy guards, cross-guild channel refusal, cache coherence (command likhe to bot.js ko turant dikhe), multi-guild isolation, aur ek regression sweep jo har reply me `[object Object]` / `undefined` leak pakadta hai.
+
+**`npm run test:level`** — XP maths (`level = floor(0.1·√xp)`, level boundaries, progress %, bar rendering) aur `/rank` + `/leaderboard` — sorting, medals, top-10 cap, khaali/corrupt store, DM refusal, aur HTTP mode.
+
+Sab suites exit code 1 dete hain fail hone par, isliye CI (`.github/workflows/ci.yml`) inhe Node **18 / 20 / 22** pe chalata hai.
+
+> Tests jaan-boojh ke mocks use karte hain — asli Discord ke bina permission checks, role hierarchy aur XP maths verify karne ka yahi ek raasta hai. Is sandbox se `discord.com` reachable nahi hai.
 
 ## Project layout
 
@@ -117,11 +131,19 @@ commands/index.js      shared command registry (teeno consumers isi ko use karte
 commands/core.js       /ping /hello /help
 commands/fun.js        /8ball /coinflip /roll /rps
 commands/mod.js        /kick /ban /timeout /purge  (Gateway-only, permission + hierarchy checks)
+commands/settings.js   /setwelcome /setautorole /setlogs /settings
+commands/level.js      /rank /leaderboard
 lib/http-interaction.js  raw HTTP payload -> discord.js-jaisa interaction shim
+lib/perms.js           permission checks — Gateway objects AUR HTTP `member.permissions` string dono se
+lib/settings.js        guild settings ka SHARED cache (bot.js + commands dono isi ko use karte hain)
+lib/levels.js          XP -> level maths aur progress bar (ek hi jagah, taaki kabhi disagree na ho)
+lib/xp.js              XP store reads + leaderboard/rank computation
 register-commands.js   Discord API pe commands register karna
 store.js               chhota JSON storage helper (data/ folder)
 scripts/selfcheck.js   integration test harness (HTTP + signatures)
 scripts/mod.test.js    moderation unit tests (mock guild)
+scripts/settings.test.js  settings unit tests (HTTP permission strings, cache coherence)
+scripts/level.test.js  leveling + XP maths tests
 ```
 
 ### Naya command kaise add karein
@@ -147,4 +169,11 @@ Moderation commands ke liye bot ke role ko target roles se **upar** rakho aur ye
 
 ## Data storage
 
-XP aur settings `data/*.json` me jaate hain (gitignored). Render ki free tier pe disk ephemeral hai — restart par data chala jaata hai. Persistent chahiye to koi DB (Mongo/Postgres) ya Render Disk laga lena.
+XP aur settings `data/*.json` me jaate hain (gitignored):
+
+- `data/settings.json` — `{ "<guildId>": { welcomeChannelId, memberRoleId, logChannelId } }`
+- `data/xp.json` — `{ "<guildId>:<userId>": { xp, username } }`
+
+Settings ka cache `lib/settings.js` me **shared** hai — pehle wo `bot.js` ke andar tha, jiski wajah se koi command settings badalti to bot ka cache stale reh jaata aur welcome/auto-role/logs kabhi update na hote. Ab command likhti hai to bot ko turant dikhta hai.
+
+> ⚠️ Render ki free tier pe disk **ephemeral** hai — restart par XP aur settings chale jaayenge. Persistent chahiye to Render Disk laga lo, ya koi DB (Mongo/Postgres) — `store.js` ek hi jagah hai, swap karna aasaan hai.

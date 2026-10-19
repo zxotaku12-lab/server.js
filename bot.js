@@ -31,6 +31,8 @@ const {
 
 const { getCommands } = require('./commands');
 const { load, save } = require('./store');
+const settings = require('./lib/settings');
+const { levelFromXp } = require('./lib/levels');
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages],
@@ -42,19 +44,11 @@ const registry = getCommands();
 client.commands = registry.map;
 console.log(`[bot] ${registry.names.length} commands loaded (${registry.files.join(', ')})`);
 
-/* ---------------- Settings cache ---------------- */
-// Har message/event pe disk se padhna slow hai, isliye in-memory cache rakhte hain.
-let settingsCache = null;
-const getSettings = (guildId) => {
-  if (!settingsCache) settingsCache = load('settings');
-  return settingsCache[guildId] || {};
-};
-const saveSettings = (guildId, patch) => {
-  if (!settingsCache) settingsCache = load('settings');
-  settingsCache[guildId] = { ...(settingsCache[guildId] || {}), ...patch };
-  save('settings', settingsCache);
-  return settingsCache[guildId];
-};
+/* ---------------- Settings ---------------- */
+// Cache ab lib/settings.js me shared hai — commands/settings.js likhta hai aur bot.js
+// wahi cache padhta hai, isliye /setwelcome ka asar turant hota hai (stale cache nahi).
+const getSettings = settings.get;
+const saveSettings = settings.set;
 client.getSettings = getSettings;
 client.saveSettings = saveSettings;
 
@@ -161,8 +155,6 @@ setInterval(() => {
   const cutoff = Date.now() - XP_COOLDOWN_MS;
   for (const [key, ts] of xpCooldown) if (ts < cutoff) xpCooldown.delete(key);
 }, 5 * 60_000).unref();
-
-const levelFromXp = (xp) => Math.floor(0.1 * Math.sqrt(xp));
 
 client.on(Events.MessageCreate, async (message) => {
   if (message.author.bot || !message.guild) return;

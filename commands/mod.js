@@ -13,7 +13,8 @@
  *   - log channel entry        -> agar /setlogs se channel set ho (settings me)
  */
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
-const { load } = require('../store');
+const settings = require('../lib/settings');
+const { hasMemberPerm, hasBotPerm } = require('../lib/perms');
 
 const MAX_TIMEOUT_MINUTES = 40320; // 28 din — Discord ki limit
 
@@ -38,19 +39,9 @@ function requireGuild(interaction) {
   return interaction.guild;
 }
 
-/** moderator ki permission check */
-function hasModPerm(interaction, flag) {
-  const perms = interaction.memberPermissions;
-  if (!perms || typeof perms.has !== 'function') return false;
-  return perms.has(flag);
-}
-
-/** bot ki khud ki permission check */
-function botHasPerm(interaction, flag) {
-  const perms = interaction.appPermissions ?? interaction.guild?.members?.me?.permissions;
-  if (!perms || typeof perms.has !== 'function') return true; // pata nahi to rok mat, aage badho
-  return perms.has(flag);
-}
+/** permission checks lib/perms.js se — Gateway aur HTTP dono mode me kaam karte hain */
+const hasModPerm = hasMemberPerm;
+const botHasPerm = hasBotPerm;
 
 /** Audit log reason me actor ka zikr rakho */
 const auditReason = (interaction, reason) =>
@@ -69,9 +60,9 @@ function blockedByHierarchy(interaction, target) {
 /** settings me set kiya hua log channel (agar ho) */
 function logChannelOf(guild) {
   try {
-    const settings = load('settings')[guild.id] || {};
-    if (!settings.logChannelId) return null;
-    const ch = guild.channels?.cache?.get(settings.logChannelId);
+    const cfg = settings.get(guild.id);
+    if (!cfg.logChannelId) return null;
+    const ch = guild.channels?.cache?.get(cfg.logChannelId);
     return ch?.isTextBased?.() ? ch : null;
   } catch {
     return null;

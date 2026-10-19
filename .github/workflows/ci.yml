@@ -42,6 +42,12 @@ jobs:
       - name: Moderation unit tests (mock guild — permissions, hierarchy, clamp, logs)
         run: npm run test:mod
 
+      - name: Settings unit tests (permission strings, cache coherence, multi-guild)
+        run: npm run test:settings
+
+      - name: Leveling unit tests (XP maths, /rank, /leaderboard)
+        run: npm run test:level
+
       - name: Run self-check (signature verification + saari commands + pages)
         run: npm run check
 
