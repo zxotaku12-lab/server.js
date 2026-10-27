@@ -1,0 +1,45 @@
+# Commands register karo — phone se, ek button
+# ---------------------------------------------
+# Discord Developer Portal me commands add karne ka koi option NAHI hai.
+# Commands sirf API se register hoti hain — ye workflow wahi karta hai.
+#
+# Setup (ek baar):
+#   Repo -> Settings -> Secrets and variables -> Actions
+#     DISCORD_TOKEN = bot token (naya)
+#     GUILD_ID      = (optional) server ID — isse commands TURANT dikhti hain
+#
+# Chalane ka tarika: Actions tab -> "Register commands" -> Run workflow
+
+name: Register commands
+
+on:
+  workflow_dispatch:
+    inputs:
+      guild_id:
+        description: 'Optional: server ID (khaali chhodo = global, ~1 ghanta)'
+        required: false
+        default: ''
+
+jobs:
+  register:
+    name: Slash commands register
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: questbot
+        run: npm ci --omit=dev
+
+      - name: Register
+        working-directory: questbot
+        env:
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          GUILD_ID: ${{ inputs.guild_id || secrets.GUILD_ID }}
+        run: node scripts/register.js

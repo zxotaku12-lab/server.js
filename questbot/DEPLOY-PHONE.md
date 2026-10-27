@@ -80,6 +80,16 @@ Phone se poori setup:
 | `/questtop` | Leaderboard |
 | `/premium` | ⭐ Premium **free** — ek click |
 
+### Commands "add" karna (Developer Portal me nahi hota)
+
+Developer Portal me commands add karne ki jagah **nahi** hai — wo portal ka feature hi nahi. Commands sirf
+**API se register** hoti hain, aur ye bot khud kar deta hai. Aage apne aap:
+
+1. Bot start hua → commands register ✅
+2. Agar na ho → Dashboard → **⌨️ Commands connect karo**
+3. Bot chal hi nahi raha? → GitHub → **Actions** → **Register commands** → **Run workflow**
+   (ek baar `DISCORD_TOKEN` secret daalna hoga; optional input me server ID daal do to turant dikhengi)
+
 **Commands nahi dikh rahe?** (sabse common problem)
 1. Dashboard **Overview** → **🔗 Bot ko server me add karo** dabao — is link me `applications.commands` scope hai.
    (Developer Portal se manually banaya link agar sirf `bot` scope ka tha, to commands kabhi dikhengi nahi.)

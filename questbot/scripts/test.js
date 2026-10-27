@@ -371,6 +371,76 @@ async function testExecution() {
   check('/questtop leaderboard dikhata hai', Boolean(embed5?.description));
 }
 
+/* ---------------- 10. register script (Developer Portal ke bina) ---------------- */
+async function testRegisterScript() {
+  console.log('\n10) Register script (commands API se)');
+
+  const reg = require(path.join(__dirname, '..', 'scripts', 'register.js'));
+
+  const payload = reg.buildPayload();
+  check('payload me saari commands hain', payload.length === 5 && payload.every((c) => c.name && c.description), JSON.stringify(payload.map((c) => c.name)));
+  check('command names lowercase', payload.every((c) => c.name === c.name.toLowerCase()));
+  check('description 100 chars ke andar', payload.every((c) => c.description.length <= 100));
+  check('kisi name me space/galat char nahi', payload.every((c) => /^[a-z0-9_-]{1,32}$/.test(c.name)));
+
+  const b64 = Buffer.from('123456789012345678').toString('base64');
+  check('token se application ID nikalta hai', reg.appIdFromToken(`${b64}.GDG-o4.x`) === '123456789012345678');
+  check('garbage token se null', reg.appIdFromToken('garbage') === null);
+
+  check('global endpoint sahi', reg.endpoint('111') === 'https://discord.com/api/v10/applications/111/commands');
+  check(
+    'guild endpoint sahi',
+    reg.endpoint('111', '222') === 'https://discord.com/api/v10/applications/111/guilds/222/commands'
+  );
+
+  check('401 ka saaf message', /Token galat/.test(reg.friendlyError(401, '')));
+  check('403 me scope fix batata hai', /applications\.commands/.test(reg.friendlyError(403, '')));
+
+  // Asli register call ko mock karo (network nahi)
+  const calls = [];
+  const realFetch = global.fetch;
+  global.fetch = async (url, opts) => {
+    calls.push({ url, method: opts?.method, auth: opts?.headers?.Authorization, body: opts?.body });
+    return {
+      ok: true,
+      status: 200,
+      text: async () => JSON.stringify(payload.map((c) => ({ id: '1', name: c.name, description: c.description }))),
+      json: async () => payload,
+    };
+  };
+
+  try {
+    const result = await reg.register({ token: `${b64}.GDG-o4.x`, guildId: '999', log: () => {} });
+    check('register() ne PUT bheja', calls[0]?.method === 'PUT');
+    check('sahi endpoint use hua', calls[0]?.url.includes('/applications/123456789012345678/guilds/999/commands'), calls[0]?.url);
+    check('Bot auth header bheja', calls[0]?.auth === `Bot ${b64}.GDG-o4.x`);
+    check('saari commands bheji', JSON.parse(calls[0].body).length === payload.length);
+    check('result me count + mode', result.count === payload.length && result.mode === 'guild');
+
+    const globalResult = await reg.register({ token: `${b64}.GDG-o4.x`, log: () => {} });
+    check('bina guild = global mode', globalResult.mode === 'global' && calls[1].url.endsWith('/applications/123456789012345678/commands'));
+
+    let failed = null;
+    global.fetch = async () => ({ ok: false, status: 401, text: async () => '{"message":"401: Unauthorized"}' });
+    try {
+      await reg.register({ token: `${b64}.x.y`, log: () => {} });
+    } catch (err) {
+      failed = err.message;
+    }
+    check('401 pe friendly error throw hota hai', /Token galat/.test(failed ?? ''), failed);
+
+    let noToken = null;
+    try {
+      await reg.register({ log: () => {} });
+    } catch (err) {
+      noToken = err.message;
+    }
+    check('token na ho to saaf error', /Token nahi mila/.test(noToken ?? ''), noToken);
+  } finally {
+    global.fetch = realFetch;
+  }
+}
+
 /* ---------------- run ---------------- */
 (async () => {
   console.log('\n🎯 Quest Bot tests');
@@ -387,6 +457,7 @@ async function testExecution() {
     testPersistence();
     testCommands();
     await testExecution();
+    await testRegisterScript();
   } catch (err) {
     console.error('\n💥 Test crash:', err);
     failed++;

@@ -2,12 +2,13 @@
   "name": "questbot",
   "version": "1.0.0",
   "private": true,
-  "description": "Standalone Discord Quest Bot — daily/weekly quests, free premium, browser dashboard se token link karo",
+  "description": "Standalone Discord Quest Bot \u2014 daily/weekly quests, free premium, browser dashboard se token link karo",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
     "test": "node scripts/test.js",
-    "check": "node scripts/selfcheck.js"
+    "check": "node scripts/selfcheck.js",
+    "register": "node scripts/register.js"
   },
   "engines": {
     "node": ">=18"

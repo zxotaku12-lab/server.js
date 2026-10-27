@@ -103,6 +103,32 @@ Rewards: **coins + XP** (premium par ×1.5).
 | **Leaderboard** | Players, quests, coins, level, streak |
 | **Access** | 🔑 Naye access keys banao aur kisi ko bhi do (owner only) |
 
+### ❓ "Developer Portal me commands kahan add karun?"
+
+**Kahin nahi.** Discord Developer Portal me slash commands add karne ka **koi option nahi hai** — portal me sirf
+token, intents, OAuth2/invite link aur interactions URL hote hain. Slash commands **sirf API se register** hoti hain.
+
+Is bot me ye teen tarike hain (koi bhi chalega):
+
+| Tarika | Kab use karo |
+|---|---|
+| **Automatic** — bot start hone par khud register | Normal case, kuch karna hi nahi padta |
+| **Dashboard button** — Overview → ⌨️ Commands connect karo | Bot online hai, turant re-register chahiye |
+| **Script / GitHub button** — `npm run register` ya Actions → "Register commands" | Bot chal nahi raha, sirf commands daalni hain |
+
+```bash
+# global (~1 ghanta)
+DISCORD_TOKEN=xxxx node scripts/register.js
+
+# kisi ek server me TURANT
+DISCORD_TOKEN=xxxx GUILD_ID=123456789012345678 node scripts/register.js
+```
+
+Phone se: **Actions tab → "Register commands" → Run workflow** (secret `DISCORD_TOKEN` ek baar set karna hoga).
+
+> Commands register hone ke baad bhi server me na dikhein to 99% cases me bot `applications.commands` scope ke
+> bina add hua hai — dashboard ke **🔗 Bot ko server me add karo** button se dobara invite karo.
+
 ### ⌨️ Commands ko bot se connect karna
 
 Bot ready hote hi commands **apne aap** register ho jaati hain. Dashboard ke **Overview** me do buttons hain:
