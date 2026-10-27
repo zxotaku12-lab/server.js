@@ -1,0 +1,32 @@
+# Quest Bot ko Render pe deploy karne ke liye blueprint.
+# Render -> New + -> Blueprint -> repo choose karo -> ye file khud mil jaayegi.
+#
+# NOTE: starter plan isliye ki persistent disk milti hai (coins/premium/access keys
+# restart par na ude). Free plan pe disk nahi milti — data restart par reset ho jaata hai.
+
+services:
+  - type: web
+    name: questbot
+    runtime: node
+    rootDir: questbot
+    plan: starter
+    buildCommand: npm ci --omit=dev
+    startCommand: node src/index.js
+    healthCheckPath: /health
+    autoDeploy: true
+    disk:
+      name: questbot-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_VERSION
+        value: 20.18.0
+      - key: QUEST_DATA_DIR
+        value: /var/data
+      # Render dashboard me values daalna — repo me kabhi commit nahi hoti
+      - key: DASHBOARD_PASSWORD
+        sync: false
+      - key: DISCORD_TOKEN
+        sync: false
+      - key: GUILD_ID
+        sync: false
