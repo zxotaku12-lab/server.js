@@ -1,0 +1,68 @@
+# Quest Bot — FREE runner (GitHub Actions)
+# ----------------------------------------
+# Isse bot GitHub ke free runner pe chalta hai — koi hosting bill nahi.
+# Sab kuch phone se ho sakta hai.
+#
+# Setup (ek baar):
+#   1. GitHub repo -> Settings -> Secrets and variables -> Actions
+#   2. New repository secret:  DISCORD_TOKEN = <naya token>
+#      (optional)              GUILD_ID     = <server id>  (commands turant register)
+#   3. Actions tab -> "Quest Bot (free runner)" -> Run workflow
+#
+# Kaise chalta hai: har 6 ghante me ek run shuru hota hai jo ~5h50m chalta hai,
+# isliye beech me chhota sa gap aata hai. Data (coins/premium/keys) cache me
+# rakhta hai — run ke beech bhi bacha rehta hai.
+#
+# Note: is mode me dashboard ka public URL nahi hota (token secret se aata hai),
+# par /quest /questlist /questall /premium — sab Discord me kaam karte hain.
+
+name: Quest Bot (free runner)
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: questbot
+  cancel-in-progress: false
+
+jobs:
+  run:
+    name: Bot (~6 ghante)
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: questbot
+        run: npm ci --omit=dev
+
+      - name: Restore quest data (coins / premium / access keys)
+        uses: actions/cache@v4
+        with:
+          path: questbot/data
+          key: questbot-data-${{ github.run_id }}
+          restore-keys: |
+            questbot-data-
+
+      - name: Run bot
+        working-directory: questbot
+        env:
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          GUILD_ID: ${{ secrets.GUILD_ID }}
+          DASHBOARD_PASSWORD: actions-runner-not-used
+          PORT: '3000'
+        run: |
+          if [ -z "$DISCORD_TOKEN" ]; then
+            echo "❌ DISCORD_TOKEN secret set nahi hai — repo Settings → Secrets → Actions me daalo."
+            exit 1
+          fi
+          # 5h50m — GitHub job ka max 6h hai
+          timeout 21000 node src/index.js || true
