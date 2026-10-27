@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quest Bot — Dashboard</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>" />
+  </head>
+  <body>
+    <!-- ---------------- LOGIN ---------------- -->
+    <section id="login" class="login-screen">
+      <div class="login-card">
+        <div class="brand-big">🎯 Quest Bot</div>
+        <p class="muted">Dashboard me aane ke liye password ya access key daalo.</p>
+
+        <form id="login-form" autocomplete="off">
+          <label class="field">
+            <span>Password / Access key</span>
+            <input id="login-key" type="password" placeholder="DASHBOARD_PASSWORD ya vw_… / adm_…" required />
+          </label>
+          <button class="btn primary wide" type="submit" id="login-btn">Login karo →</button>
+          <p class="error" id="login-error"></p>
+        </form>
+
+        <p class="hint">
+          Owner password pehli baar terminal me print hota hai (ya <code>DASHBOARD_PASSWORD</code> env se set karo).<br />
+          Kisi ko access dena ho to owner dashboard ke <b>Access</b> tab se key bana ke de sakta hai.
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------- APP ---------------- -->
+    <div id="app" class="app hidden">
+      <aside class="sidebar">
+        <div class="brand">🎯 Quest Bot</div>
+        <nav class="nav">
+          <button class="nav-btn active" data-tab="overview">📊 Overview</button>
+          <button class="nav-btn" data-tab="quests">📜 Quests</button>
+          <button class="nav-btn" data-tab="board">🏆 Leaderboard</button>
+          <button class="nav-btn owner-only" data-tab="access">🔑 Access</button>
+        </nav>
+
+        <div class="sidebar-foot">
+          <div class="who">
+            <span id="who-label">—</span>
+            <span class="badge" id="who-role">—</span>
+          </div>
+          <button class="btn ghost small" id="logout-btn">Logout</button>
+        </div>
+      </aside>
+
+      <main class="main">
+        <!-- OVERVIEW -->
+        <section class="tab" id="tab-overview">
+          <header class="page-head">
+            <h1>Overview</h1>
+            <p class="muted">Bot link karo, status dekho, aur premium baanto — sab free.</p>
+          </header>
+
+          <div class="grid two">
+            <div class="card">
+              <div class="card-head">
+                <h2>🤖 Bot status</h2>
+                <span class="pill" id="bot-state">—</span>
+              </div>
+              <div class="kv">
+                <div><span>Tag</span><b id="bot-tag">—</b></div>
+                <div><span>Servers</span><b id="bot-guilds">0</b></div>
+                <div><span>Ping</span><b id="bot-ping">—</b></div>
+                <div><span>Token</span><b id="bot-token-source">—</b></div>
+              </div>
+
+              <form id="token-form" class="inline-form">
+                <input id="token-input" type="password" placeholder="Bot token paste karo (Developer Portal → Bot → Reset Token)" />
+                <button class="btn primary" type="submit" id="start-btn">Link bot</button>
+              </form>
+
+              <div class="row gap wrap">
+                <button class="btn danger" id="stop-btn">Stop</button>
+                <button class="btn ghost" id="restart-btn">Restart</button>
+              </div>
+
+              <hr class="sep" />
+
+              <div class="cmd-box">
+                <div class="cmd-head">
+                  <span>⌨️ Slash commands</span>
+                  <span class="pill" id="cmd-state">—</span>
+                </div>
+                <p class="hint" id="cmd-hint" style="margin-top: 6px">
+                  Commands register karo aur bot ko server me add karo — dono yahin se.
+                </p>
+                <div class="row gap wrap" style="margin-top: 10px">
+                  <button class="btn primary" id="register-btn">⌨️ Commands connect karo</button>
+                  <button class="btn ghost" id="invite-btn">🔗 Bot ko server me add karo</button>
+                </div>
+                <p class="hint" id="invite-hint" style="margin-top: 8px"></p>
+              </div>
+
+              <p class="hint" id="bot-hint">Token sirf tumhare server ke <code>data/config.json</code> me save hota hai.</p>
+            </div>
+
+            <div class="card">
+              <div class="card-head">
+                <h2>⭐ Premium — 100% free</h2>
+                <span class="pill gold">FREE</span>
+              </div>
+              <p class="muted">
+                Koi payment nahi, koi grind nahi. Premium = <b>+2 extra daily quests</b> aur <b>×1.5 rewards</b>.
+                Member bas <code>/premium</code> chala ke ek click me le sakta hai.
+              </p>
+              <form id="premium-form" class="stack">
+                <label class="field">
+                  <span>Server</span>
+                  <select id="premium-guild"></select>
+                </label>
+                <label class="field">
+                  <span>Member (ID ya naam)</span>
+                  <input id="premium-user" placeholder="123456789012345678 ya username" />
+                </label>
+                <button class="btn gold-btn" type="submit">⭐ Premium do (free)</button>
+              </form>
+              <p class="hint" id="premium-hint">Sirf admin/owner kar sakta hai.</p>
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="stat"><span>Players</span><b id="stat-players">0</b></div>
+            <div class="stat"><span>Quests claimed</span><b id="stat-claims">0</b></div>
+            <div class="stat"><span>Coins in circulation</span><b id="stat-coins">0</b></div>
+            <div class="stat"><span>Premium players</span><b id="stat-premium">0</b></div>
+          </div>
+
+          <div class="card slim">
+            <div class="row space">
+              <div>📅 Daily reset: <b id="reset-daily">—</b></div>
+              <div>🗓️ Weekly reset: <b id="reset-weekly">—</b></div>
+              <div>⌨️ Commands: <b id="cmd-count">0</b></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- QUESTS -->
+        <section class="tab hidden" id="tab-quests">
+          <header class="page-head">
+            <h1>Quests</h1>
+            <p class="muted">Rotation har din badalti hai. Sab kuch free — members <code>/quest</code> se dekhte hain.</p>
+          </header>
+
+          <div class="card unlimited-card" id="unlimited-card">
+            <div class="card-head">
+              <h2>⚡ Unlimited mode</h2>
+              <span class="pill" id="unlimited-state">OFF</span>
+            </div>
+            <p class="muted" id="unlimited-desc">
+              ON karte hi <b>saare quests ek saath</b> aa jaate hain (10 daily + 3 premium + 5 weekly + 5 one-time)
+              aur <b>turant complete</b> maane jaate hain — member bas <code>/questall</code> dabata hai, poori reward milti hai.
+              Koi grind nahi, koi limit nahi.
+            </p>
+            <button class="btn primary" id="unlimited-btn">⚡ Unlimited ON karo</button>
+            <p class="hint">Reward har period me ek baar milta hai (daily roz, weekly har hafte, one-time ek dafa) — warna coins ka koi matlab nahi rehta.</p>
+          </div>
+
+          <div class="grid two">
+            <div class="card">
+              <div class="card-head"><h2>📅 Aaj ke daily quests</h2><span class="pill" id="daily-count">0</span></div>
+              <div class="quest-list" id="today-quests"></div>
+            </div>
+            <div class="card">
+              <div class="card-head"><h2>🗓️ Is hafte ke weekly</h2><span class="pill" id="weekly-count">0</span></div>
+              <div class="quest-list" id="week-quests"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h2>📜 Poora quest catalog</h2></div>
+            <div class="quest-list" id="catalog"></div>
+          </div>
+        </section>
+
+        <!-- LEADERBOARD -->
+        <section class="tab hidden" id="tab-board">
+          <header class="page-head">
+            <h1>Leaderboard</h1>
+            <p class="muted">Sabse zyada quests kaun kar raha hai.</p>
+          </header>
+          <div class="card">
+            <table class="table">
+              <thead>
+                <tr><th>#</th><th>Player</th><th>Quests</th><th>Coins</th><th>Level</th><th>Streak</th><th>Premium</th></tr>
+              </thead>
+              <tbody id="board-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ACCESS -->
+        <section class="tab hidden owner-only" id="tab-access">
+          <header class="page-head">
+            <h1>Access</h1>
+            <p class="muted">
+              Kisi ko bhi dashboard access do — key banao, unhe bhej do. <b>Viewer</b> sirf dekh sakta hai,
+              <b>Admin</b> bot control + premium de sakta hai. Revoke karte hi unka access band.
+            </p>
+          </header>
+
+          <div class="card">
+            <div class="card-head"><h2>🔑 Naya access key</h2></div>
+            <form id="access-form" class="row gap wrap">
+              <input id="access-label" placeholder="Kiska access hai? (naam, e.g. Rahul)" />
+              <select id="access-role">
+                <option value="viewer">Viewer — sirf dekh sakta hai</option>
+                <option value="admin">Admin — bot + premium control</option>
+              </select>
+              <button class="btn primary" type="submit">Key banao</button>
+            </form>
+            <div id="new-key-box" class="new-key hidden">
+              <p>Ye key <b>sirf ek baar</b> dikhti hai — copy karke bhej do:</p>
+              <div class="row gap">
+                <code id="new-key-value">—</code>
+                <button class="btn ghost small" id="copy-key">Copy</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h2>Active keys</h2><span class="pill" id="keys-count">0</span></div>
+            <div id="keys-list" class="keys"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+    <script src="/app.js"></script>
+  </body>
+</html>
