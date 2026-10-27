@@ -33,6 +33,7 @@ const bot = require('./lib/bot');
 const users = require('./lib/users');
 const quests = require('./lib/quests');
 const periods = require('./lib/periods');
+const settings = require('./lib/settings');
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -186,6 +187,7 @@ app.get('/api/status', requireAuth, (req, res) => {
       weekly: periods.nextReset(new Date(), 'weekly'),
     },
     premium: { free: true, multiplier: quests.PREMIUM_MULTIPLIER, extraDaily: quests.PREMIUM_PER_DAY },
+    settings: settings.get(),
   });
 });
 
@@ -204,6 +206,22 @@ app.post('/api/bot/restart', requireRole('bot.control'), (req, res) => {
 
 app.get('/api/guilds', requireAuth, (_req, res) => {
   res.json({ guilds: bot.guildList(), bot: bot.getStatus() });
+});
+
+/* ------------------------------------------------------------------ */
+/*  Settings — ⚡ Unlimited mode                                       */
+/* ------------------------------------------------------------------ */
+app.get('/api/settings', requireAuth, (_req, res) => {
+  res.json(settings.get());
+});
+
+app.post('/api/settings', requireRole('settings.manage'), (req, res) => {
+  const body = req.body ?? {};
+  const patch = {};
+  if ('unlimited' in body) patch.unlimited = Boolean(body.unlimited);
+
+  const updated = settings.set(patch);
+  res.json({ ok: true, ...updated });
 });
 
 /** Bot invite link — isme `applications.commands` scope hai (iske bina commands dikhti nahi) */

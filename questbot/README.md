@@ -58,6 +58,28 @@ Developer Portal → Bot → **Privileged Gateway Intents** me ON karo:
 
 Quest complete karna apne aap hota hai — messages, reactions, VC minutes, bot commands aur invites count hote hain.
 
+### ⚡ Unlimited mode — sab ek saath, koi grind nahi
+
+Dashboard → **Quests** tab → **⚡ Unlimited ON karo**. Ya env se hamesha ON:
+
+```bash
+QUEST_UNLIMITED=1 npm start
+```
+
+ON hone par:
+
+| Normal | Unlimited |
+|---|---|
+| Daily 3 rotate | **Poore 10 daily** ek saath |
+| Priority premium +2 | **Poore 3 premium** (premium walon ko) |
+| Weekly 2 rotate | **Poore 5 weekly** |
+| Grind karke complete karo | **Sab turant complete** |
+| `/questall` = jitne complete hue | `/questall` = **saare (20+) ek click me** |
+
+Ek click me poori reward (~780 🪙 + 460 XP bina premium, ~1000+ premium ke saath).
+Reward **har period me ek baar** milta hai — daily roz reset, weekly har hafte, one-time ek dafa.
+(Isse coins/leaderboard ka matlab bana rehta hai; warna infinite farm ban jaata.)
+
 ### Quest types
 
 | Type | Rotation | Example |
@@ -138,8 +160,8 @@ data/config.json   -> bot token, owner password, access keys
 ## Tests
 
 ```bash
-npm test        # 80 unit tests — rotation, counters, claim, premium, access
-npm run check   # 45 E2E checks — server boot, login, permissions, keys, premium
+npm test        # 96 unit tests — rotation, counters, claim, premium, unlimited, access
+npm run check   # 63 E2E checks — boot, login, permissions, commands, unlimited, keys
 ```
 
 Dono bina Discord token ke chalte hain (isolated temp data dir).

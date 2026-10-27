@@ -187,6 +187,31 @@ async function main() {
     check('status me register info hai', Boolean(statusWithCmds.json?.bot?.register) === true, JSON.stringify(statusWithCmds.json?.bot?.register));
     check('status me inviteUrl hai', /oauth2/.test(statusWithCmds.json?.bot?.inviteUrl ?? ''));
 
+    /* ---------- 4c. ⚡ Unlimited mode ---------- */
+    console.log('\n4c) ⚡ Unlimited mode (sab ek saath)');
+    const settingsOff = await call('/api/settings', { cookie: owner.cookie });
+    check('default unlimited OFF', settingsOff.json?.unlimited === false, JSON.stringify(settingsOff.json));
+
+    const questsBefore = await call('/api/quests', { cookie: owner.cookie });
+    check('OFF pe 3 daily quests', questsBefore.json?.today?.length === 3, String(questsBefore.json?.today?.length));
+
+    const turnOn = await call('/api/settings', { method: 'POST', body: { unlimited: true }, cookie: owner.cookie });
+    check('unlimited ON -> ok', turnOn.status === 200 && turnOn.json?.unlimited === true, JSON.stringify(turnOn.json));
+
+    const questsAfter = await call('/api/quests', { cookie: owner.cookie });
+    check('ON pe poora daily pool (10)', questsAfter.json?.today?.length === 10, String(questsAfter.json?.today?.length));
+    check('ON pe poora weekly pool (5)', questsAfter.json?.week?.length === 5, String(questsAfter.json?.week?.length));
+    check('catalog me unlimited flag', questsAfter.json?.catalog?.unlimited === true);
+
+    const statusUnlimited = await call('/api/status', { cookie: owner.cookie });
+    check('status me settings aati hain', statusUnlimited.json?.settings?.unlimited === true);
+
+    const turnOff = await call('/api/settings', { method: 'POST', body: { unlimited: false }, cookie: owner.cookie });
+    check('unlimited OFF -> ok', turnOff.json?.unlimited === false);
+
+    const backToNormal = await call('/api/quests', { cookie: owner.cookie });
+    check('OFF karne par 3 daily wapas', backToNormal.json?.today?.length === 3, String(backToNormal.json?.today?.length));
+
     /* ---------- 5. access keys ---------- */
     console.log('\n5) Access keys — kisko access de sakte ho');
     const viewerKey = await call('/api/access', {
@@ -215,6 +240,12 @@ async function main() {
 
     const viewerKeys = await call('/api/access', { cookie: viewerLogin.cookie });
     check('viewer keys nahi dekh sakta -> 403', viewerKeys.status === 403, String(viewerKeys.status));
+
+    const viewerSettings = await call('/api/settings', { cookie: viewerLogin.cookie });
+    check('viewer settings dekh sakta hai', viewerSettings.status === 200);
+
+    const viewerToggle = await call('/api/settings', { method: 'POST', body: { unlimited: true }, cookie: viewerLogin.cookie });
+    check('viewer unlimited ON nahi kar sakta -> 403', viewerToggle.status === 403, String(viewerToggle.status));
 
     const adminLogin = await call('/api/login', { method: 'POST', body: { key: adminKey.json.key } });
     check('admin key se login', adminLogin.status === 200 && adminLogin.json?.role === 'admin');

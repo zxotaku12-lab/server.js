@@ -314,6 +314,45 @@
     $('#stat-premium').textContent = fmt(data.premiumPlayers);
   }
 
+  /* ---------------- Unlimited mode ---------------- */
+  let unlimited = false;
+
+  function renderUnlimited(settings, canManage) {
+    unlimited = Boolean(settings?.unlimited);
+    const state = $('#unlimited-state');
+    const btn = $('#unlimited-btn');
+    const card = $('#unlimited-card');
+
+    state.textContent = unlimited ? 'ON' : 'OFF';
+    state.className = `pill ${unlimited ? 'gold' : 'off'}`;
+    card.classList.toggle('active', unlimited);
+
+    btn.textContent = unlimited ? '⚡ Unlimited OFF karo' : '⚡ Unlimited ON karo';
+    btn.classList.toggle('primary', !unlimited);
+    btn.classList.toggle('ghost', unlimited);
+    btn.disabled = !canManage;
+
+    if (settings?.unlimitedSource === 'env') {
+      btn.disabled = true;
+      btn.textContent = '⚡ Env se ON hai (QUEST_UNLIMITED)';
+    }
+
+    $('#unlimited-desc').innerHTML = unlimited
+      ? `✅ <b>ON hai</b> — saare quests ek saath active hain aur turant complete hote hain. Members <code>/questall</code> ya claim button dabate hi poori reward le lete hain.`
+      : `ON karte hi <b>saare quests ek saath</b> aa jaate hain (10 daily + 3 premium + 5 weekly + 5 one-time) aur <b>turant complete</b> maane jaate hain — member bas <code>/questall</code> dabata hai, poori reward milti hai. Koi grind nahi, koi limit nahi.`;
+  }
+
+  $('#unlimited-btn').addEventListener('click', async () => {
+    try {
+      const data = await api('/api/settings', { method: 'POST', body: { unlimited: !unlimited } });
+      renderUnlimited(data, me?.permissions?.controlBot);
+      toast(data.unlimited ? '⚡ Unlimited ON — ab sab quests ek saath complete hain!' : 'Unlimited OFF — normal quests wapas.');
+      loadQuests();
+    } catch (err) {
+      toast(err.message, 'err');
+    }
+  });
+
   /* ---------------- Quests ---------------- */
   function questCard(quest, type) {
     const tags = [];
@@ -334,6 +373,7 @@
 
   async function loadQuests() {
     const data = await api('/api/quests');
+    renderUnlimited({ unlimited: data.catalog.unlimited }, me?.permissions?.controlBot);
 
     const catalog = data.catalog;
     const withLabel = (list) => list.map((q) => ({ ...q, metricLabel: q.metricLabel }));

@@ -176,6 +176,7 @@ function can(role, action) {
     view: 1,
     'bot.control': 2,
     'premium.grant': 2,
+    'settings.manage': 2,
     'access.manage': 3,
     'quests.reset': 2,
   }[action] ?? 99;

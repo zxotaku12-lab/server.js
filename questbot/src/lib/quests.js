@@ -12,6 +12,7 @@
  */
 const periods = require('./periods');
 const users = require('./users');
+const settings = require('./settings');
 
 const DAILY_PER_DAY = 3;
 const PREMIUM_PER_DAY = 2;
@@ -90,15 +91,17 @@ function rotate(pool, seed, count, step = 7) {
   return out;
 }
 
-/** Aaj ki daily quests (premium = extra 2) */
+/** Aaj ki daily quests (premium = extra 2).
+ *  ⚡ Unlimited mode me POORA pool ek saath — koi rotation limit nahi. */
 function dailyQuests(date = new Date(), premium = false) {
   const seed = periods.dayIndex(date) + 1;
   const periodKey = periods.dayKey(date);
+  const unlimited = settings.unlimited();
 
-  const list = rotate(POOLS.daily, seed, DAILY_PER_DAY);
-  if (premium) list.push(...rotate(POOLS.premium, seed, PREMIUM_PER_DAY));
+  const base = unlimited ? [...POOLS.daily] : rotate(POOLS.daily, seed, DAILY_PER_DAY);
+  const bonus = premium ? (unlimited ? [...POOLS.premium] : rotate(POOLS.premium, seed, PREMIUM_PER_DAY)) : [];
 
-  return list.map((item) => ({
+  return [...base, ...bonus].map((item) => ({
     ...item,
     type: 'daily',
     periodKey,
@@ -106,12 +109,15 @@ function dailyQuests(date = new Date(), premium = false) {
   }));
 }
 
-/** Is hafte ki weekly quests */
+/** Is hafte ki weekly quests — unlimited mode me poora pool */
 function weeklyQuests(date = new Date()) {
   const seed = periods.weekIndex(date) + 1;
   const periodKey = periods.isoWeek(date);
+  const unlimited = settings.unlimited();
 
-  return rotate(POOLS.weekly, seed, WEEKLY_PER_WEEK).map((item) => ({
+  const list = unlimited ? [...POOLS.weekly] : rotate(POOLS.weekly, seed, WEEKLY_PER_WEEK);
+
+  return list.map((item) => ({
     ...item,
     type: 'weekly',
     periodKey,
@@ -139,8 +145,11 @@ function claimKey(quest) {
  */
 function decorate(user, quest, date = new Date()) {
   const taken = users.isPremium(user);
+  const unlimited = settings.unlimited();
   const bucket = user.counters[scopeKey(quest.type, quest.periodKey)] ?? {};
-  const raw = Number(bucket[quest.metric]) || 0;
+  const tracked = Number(bucket[quest.metric]) || 0;
+  // ⚡ Unlimited mode: har quest turant complete — progress ki zaroorat nahi
+  const raw = unlimited ? Math.max(tracked, quest.target) : tracked;
   const current = Math.min(quest.target, Math.floor(raw));
   const percent = quest.target > 0 ? Math.min(100, Math.round((raw / quest.target) * 100)) : 100;
   const key = claimKey(quest);
@@ -232,6 +241,7 @@ function catalog() {
     once: map(POOLS.once),
     rotation: { daily: DAILY_PER_DAY, premium: PREMIUM_PER_DAY, weekly: WEEKLY_PER_WEEK },
     premiumMultiplier: PREMIUM_MULTIPLIER,
+    unlimited: settings.unlimited(),
   };
 }
 

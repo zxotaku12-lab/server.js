@@ -174,6 +174,60 @@ function testPremium() {
   check('revoke ke baad OFF', users.isPremium(users.peek(G, '333333333333333333')) === false);
 }
 
+/* ---------------- 5b. unlimited mode ---------------- */
+function testUnlimited() {
+  console.log('\n5b) ⚡ Unlimited mode — sab ek saath, unlimited');
+
+  const settings = require(path.join(SRC, 'lib', 'settings.js'));
+  check('default OFF', settings.unlimited() === false);
+
+  settings.set({ unlimited: true });
+  check('ON ho gaya', settings.unlimited() === true);
+
+  const daily = quests.dailyQuests(new Date());
+  check(`daily me poora pool (${quests.POOLS.daily.length})`, daily.length === quests.POOLS.daily.length, String(daily.length));
+
+  const prem = quests.dailyQuests(new Date(), true);
+  check('premium ko premium pool bhi poora milta hai', prem.length === quests.POOLS.daily.length + quests.POOLS.premium.length, String(prem.length));
+
+  const week = quests.weeklyQuests(new Date());
+  check(`weekly me poora pool (${quests.POOLS.weekly.length})`, week.length === quests.POOLS.weekly.length, String(week.length));
+
+  const UG = '777777777777777777';
+  const UU = '888888888888888888';
+  const user = users.ensure(UG, UU);
+
+  const all = [
+    ...quests.activeQuests(user, new Date(), 'daily'),
+    ...quests.activeQuests(user, new Date(), 'weekly'),
+    ...quests.activeQuests(user, new Date(), 'once'),
+  ];
+  check('har quest turant complete', all.every((q) => q.done && q.percent === 100), String(all.filter((q) => !q.done).length));
+  check('bina ek bhi message bheje sab claimable', all.every((q) => q.claimable));
+  check('total quests = saare pools', all.length === quests.POOLS.daily.length + quests.POOLS.weekly.length + quests.POOLS.once.length, String(all.length));
+
+  const result = quests.claimAll(UG, UU);
+  check('ek click me SAARE quests claim', result.claimed.length === all.length, `${result.claimed.length}/${all.length}`);
+  check('poori reward mili', result.coins > 1000 && result.xp > 500, `coins ${result.coins}, xp ${result.xp}`);
+  check('coins user me save hue', users.peek(UG, UU).coins === result.coins);
+
+  const repeat = quests.claimAll(UG, UU);
+  check('usi period me dobara claim nahi (no infinite farm)', repeat.claimed.length === 0, String(repeat.claimed.length));
+
+  settings.set({ unlimited: false });
+  check('OFF karne par normal rotation wapas', quests.dailyQuests(new Date()).length === quests.DAILY_PER_DAY);
+
+  // Env override test
+  const prev = process.env.QUEST_UNLIMITED;
+  process.env.QUEST_UNLIMITED = '1';
+  check('QUEST_UNLIMITED=1 env se ON', settings.unlimited() === true);
+  settings.set({ unlimited: false });
+  check('env override dashboard setting ko haraata hai', settings.unlimited() === true);
+  if (prev === undefined) delete process.env.QUEST_UNLIMITED;
+  else process.env.QUEST_UNLIMITED = prev;
+  check('env hataane ke baad wapas OFF', settings.unlimited() === false);
+}
+
 /* ---------------- 6. access control ---------------- */
 function testAccess() {
   console.log('\n6) Access control (kisko access de sakte ho)');
@@ -328,6 +382,7 @@ async function testExecution() {
     testCounters();
     testClaim();
     testPremium();
+    testUnlimited();
     testAccess();
     testPersistence();
     testCommands();

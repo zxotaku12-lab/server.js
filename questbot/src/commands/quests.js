@@ -7,6 +7,7 @@ const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRow
 const quests = require('../lib/quests');
 const users = require('../lib/users');
 const periods = require('../lib/periods');
+const settings = require('../lib/settings');
 const { bar } = require('../lib/levels');
 
 const COLOR = 0x5865f2;
@@ -124,7 +125,11 @@ module.exports = [
           name: '⭐ Premium — bilkul FREE',
           value: `Premium lene ke liye kuch **kharidna ya grind nahi** karna — bas \`/premium\` chalao.\nPremium = **${cat.rotation.premium} extra daily quests** + **×${cat.premiumMultiplier} rewards**.`,
         })
-        .setFooter({ text: 'Aaj ke quests dekhne ke liye /quest · sab claim karne ke liye /questall' });
+        .setFooter({
+          text: settings.unlimited()
+            ? '⚡ Unlimited ON — /questall me saare quests ek saath claim ho jaate hain'
+            : 'Aaj ke quests dekhne ke liye /quest · sab claim karne ke liye /questall',
+        });
 
       return interaction.reply({ embeds: [embed] });
     },
@@ -276,7 +281,14 @@ module.exports = [
 
 /** Embed ke top ka chhota header */
 function headerText(premium) {
-  return premium
-    ? '⭐ **Premium active** — extra quests + ×1.5 rewards unlocked (free)'
-    : '⭐ Premium **FREE** hai — `/premium` se ek click me lo';
+  const lines = [];
+  if (settings.unlimited()) {
+    lines.push('⚡ **Unlimited mode ON** — saare quests pehle se complete hain, bas claim karo!');
+  }
+  lines.push(
+    premium
+      ? '⭐ **Premium active** — extra quests + ×1.5 rewards unlocked (free)'
+      : '⭐ Premium **FREE** hai — `/premium` se ek click me lo'
+  );
+  return lines.join('\n');
 }

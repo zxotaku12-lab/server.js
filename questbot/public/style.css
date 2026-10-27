@@ -204,6 +204,13 @@ input:focus, select:focus { border-color: var(--brand); }
 
 .sep { border: 0; border-top: 1px dashed var(--line); margin: 16px 0; }
 
+.unlimited-card { border-color: var(--line); transition: border-color 0.2s, box-shadow 0.2s; }
+.unlimited-card.active {
+  border-color: #6b5a17;
+  box-shadow: 0 0 0 1px #6b5a17 inset, 0 12px 30px rgba(241, 196, 15, 0.08);
+  background: linear-gradient(180deg, #1d1a10, #12161f);
+}
+
 .cmd-box { background: #10131b; border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
 .cmd-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-weight: 700; font-size: 14px; }
 
