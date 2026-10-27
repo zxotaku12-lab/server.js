@@ -135,15 +135,49 @@ Dono bina Discord token ke chalte hain (isolated temp data dir).
 
 ---
 
-## Deploy (Render / Railway / VPS)
+## Deploy
 
-1. Repo push karo, service ka root `questbot` rakho
-2. Build: `npm install` · Start: `npm start`
-3. Env me `DASHBOARD_PASSWORD` (+ optionally `DISCORD_TOKEN`, `GUILD_ID`) set karo
-4. Deploy ke baad dashboard URL kholo
+Bot ko Discord se connect hone ke liye **internet chahiye** — kisi bhi aise sandbox/preview me jo discord.com
+block karta hai, wahan bot `off` rahega (dashboard chalega, par link nahi hoga).
 
-> Bot ko 24/7 online rehna chahiye (gateway connection), isliye Render ke free plan me sleep se bachne ke liye
-> paid instance ya VPS use karna better hai.
+### Apne PC pe (sabse simple)
+
+```bash
+cd questbot
+npm install
+DASHBOARD_PASSWORD=mera-password npm start
+# http://localhost:3000 -> token paste -> Link bot
+```
+
+### Docker / VPS
+
+```bash
+cd questbot
+docker build -t questbot .
+docker run -d --restart unless-stopped \
+  -p 3000:3000 \
+  -e DASHBOARD_PASSWORD=mera-password \
+  -v questbot-data:/app/data \
+  questbot
+```
+
+### Render (blueprint ready)
+
+Repo me `questbot/render.yaml` hai — Render → **New → Blueprint** → repo choose karo, `DASHBOARD_PASSWORD`
+set karo, deploy. Dashboard URL mil jaayega.
+
+> ⚠️ Free plan thodi der me sleep karta hai, aur bot ko 24/7 gateway connection chahiye — ya to paid instance
+> rakho ya VPS / Oracle free-tier VM use karo (`docker run ... --restart unless-stopped`).
+
+---
+
+## 🔐 Token safety
+
+- Bot token **password jaisa** hota hai — jise bhi do, wo tumhara bot poora control kar sakta hai
+- Token **chat me paste nahi karna chahiye**. Agar kabhi ho gaya, turant
+  **Developer Portal → Bot → Reset Token** se naya lo (purana turant invalid ho jaata hai)
+- Ye bot token sirf `data/config.json` me save karta hai (gitignored) — repo me kabhi commit nahi hota
+- Shared hosting pe `DASHBOARD_PASSWORD` strong rakho; bahar waalon ko sirf `viewer` key do
 
 ---
 

@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: questbot
+    runtime: node
+    rootDir: questbot
+    plan: starter
+    buildCommand: npm ci --omit=dev
+    startCommand: node src/index.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.18.0
+      - key: DASHBOARD_PASSWORD
+        sync: false # dashboard se set karo
+      - key: DISCORD_TOKEN
+        sync: false # optional — dashboard se token paste karna easier hai
+      - key: GUILD_ID
+        sync: false
