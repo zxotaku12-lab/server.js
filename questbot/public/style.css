@@ -202,6 +202,11 @@ input:focus, select:focus { border-color: var(--brand); }
 .stack .field { margin: 6px 0; }
 .stack .btn { margin-top: 8px; }
 
+.sep { border: 0; border-top: 1px dashed var(--line); margin: 16px 0; }
+
+.cmd-box { background: #10131b; border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+.cmd-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-weight: 700; font-size: 14px; }
+
 .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 18px; }
 .stat {
   background: var(--card);

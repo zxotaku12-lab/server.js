@@ -76,10 +76,21 @@ Rewards: **coins + XP** (premium par ×1.5).
 
 | Tab | Kya hai |
 |---|---|
-| **Overview** | Bot status (ready / connecting / error), token paste karke link, stop / restart, premium dena, live stats, reset timers |
+| **Overview** | Bot status (ready / connecting / error), token paste karke link, **commands connect**, **invite link**, stop / restart, premium dena, live stats, reset timers |
 | **Quests** | Aaj ke daily + weekly quests aur poora catalog |
 | **Leaderboard** | Players, quests, coins, level, streak |
 | **Access** | 🔑 Naye access keys banao aur kisi ko bhi do (owner only) |
+
+### ⌨️ Commands ko bot se connect karna
+
+Bot ready hote hi commands **apne aap** register ho jaati hain. Dashboard ke **Overview** me do buttons hain:
+
+- **⌨️ Commands connect karo** — abhi turant register (dobara try karne / refresh ke liye). `GUILD_ID` set ho to
+  us server me instant, warna global (~1 ghanta).
+- **🔗 Bot ko server me add karo** — invite link jisme `applications.commands` scope + zaroori permissions hain.
+
+> ⚠️ Sabse common problem: bot ko **galat invite link** se add karna (bina `applications.commands` scope).
+> Tab commands register to ho jaati hain par server me dikhti nahi. Isliye dashboard ka invite button hi use karo.
 
 ### 🔑 Access kisko de sakte ho
 

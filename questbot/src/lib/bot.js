@@ -17,14 +17,45 @@ let lastError = null;
 let readyAt = null;
 let registeredAt = null;
 let loginStartedAt = null;
+let lastRegister = { at: null, mode: 'none', count: 0, error: null };
+
+/** Bot ko invite karne ke liye permissions: ViewChannel + SendMessages + EmbedLinks
+ *  + ReadMessageHistory + AddReactions (+ UseExternalEmojis) */
+const INVITE_PERMISSIONS = String(1024 + 2048 + 16384 + 65536 + 64 + 262144);
 
 function tokenInUse() {
   return (process.env.DISCORD_TOKEN || '').trim() || access.savedToken() || '';
 }
 
-/** Commands register karo — GUILD_ID ho to instant */
-async function registerCommands(c) {
-  if (!c.application) return { mode: 'none', count: 0 };
+/** Application (client) ID — invite link banane ke liye */
+function clientId() {
+  return client?.application?.id ?? client?.user?.id ?? ((process.env.CLIENT_ID || '').trim() || null);
+}
+
+/**
+ * Bot invite link — Discord me bot ko add karne ke liye.
+ * Isme `applications.commands` scope hai; iske bina slash commands kabhi
+ * register ho jaati hain par server me DIKHTI nahi hain.
+ */
+function inviteUrl() {
+  const id = clientId();
+  if (!id) return null;
+  const params = new URLSearchParams({
+    client_id: id,
+    scope: 'bot applications.commands',
+    permissions: INVITE_PERMISSIONS,
+  });
+  return `https://discord.com/oauth2/authorize?${params.toString()}`;
+}
+
+
+/** Commands register karo — GUILD_ID ho to instant, warna global.
+ *  Ek baar fail ho to 1.5s baad ek retry (transient network errors ke liye). */
+async function registerCommands(c, attempt = 1) {
+  if (!c?.application) {
+    lastRegister = { at: Date.now(), mode: 'none', count: 0, error: 'Application available nahi hai' };
+    return lastRegister;
+  }
   const json = commands.json();
   const guildId = (process.env.GUILD_ID || '').trim();
 
@@ -34,20 +65,28 @@ async function registerCommands(c) {
       if (guild) {
         await guild.commands.set(json);
         registeredAt = Date.now();
+        lastRegister = { at: registeredAt, mode: 'guild', count: json.length, guild: guild.name, error: null };
         console.log(`[bot] ${json.length} commands guild "${guild.name}" me register ho gayi ✅`);
-        return { mode: 'guild', count: json.length };
+        return lastRegister;
       }
       console.warn(`[bot] GUILD_ID "${guildId}" nahi mila — global register kar raha hoon`);
     }
     await c.application.commands.set(json);
     registeredAt = Date.now();
+    lastRegister = { at: registeredAt, mode: 'global', count: json.length, error: null };
     console.log(`[bot] ${json.length} commands GLOBALLY register ho gayi (1 ghanta lag sakta hai)`);
-    return { mode: 'global', count: json.length };
+    return lastRegister;
   } catch (err) {
+    if (attempt < 2) {
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      return registerCommands(c, attempt + 1);
+    }
     console.error('[bot] command register fail:', err.message);
-    return { mode: 'error', count: 0, error: err.message };
+    lastRegister = { at: Date.now(), mode: 'error', count: 0, error: err.message };
+    return lastRegister;
   }
 }
+
 
 /** Bot start karo (token optional — na do to env/saved se) */
 function start(token) {
@@ -129,9 +168,17 @@ function getStatus() {
     state: ready ? 'ready' : started ? (lastError ? 'error' : 'connecting') : lastError ? 'error' : 'off',
     error: lastError,
     tag: client?.user?.tag ?? null,
+    clientId: clientId(),
     guilds: client?.guilds?.cache?.size ?? 0,
     ping: client?.ws?.ping ?? null,
     commands: commands.names().length,
+    commandNames: commands.names(),
+    register: {
+      ...lastRegister,
+      // ready hone ke baad register automatic chalta hai — UI ko pata rahe
+      needsRegister: Boolean(ready && !lastRegister.at),
+    },
+    inviteUrl: inviteUrl(),
     readyAt,
     registeredAt,
     loginStartedAt,
@@ -170,10 +217,26 @@ async function findMember(guildId, query) {
   return member ? { id: member.id, username: member.user.username, displayName: member.displayName } : null;
 }
 
-/** Commands dobara register karo */
-function reregister() {
-  if (!client?.isReady?.()) return Promise.resolve({ mode: 'offline', count: 0 });
-  return registerCommands(client);
+/** Commands dobara register karo (dashboard ke button se) */
+async function reregister() {
+  if (!client?.isReady?.()) {
+    return { ok: false, mode: 'offline', count: 0, error: 'Bot online nahi hai — pehle token se link karo.' };
+  }
+  const result = await registerCommands(client);
+  return { ok: result.mode !== 'error' && result.mode !== 'none', ...result };
 }
 
-module.exports = { start, stop, restart, getStatus, guildList, findMember, reregister, client: () => client, tokenInUse };
+module.exports = {
+  start,
+  stop,
+  restart,
+  getStatus,
+  guildList,
+  findMember,
+  reregister,
+  inviteUrl,
+  clientId,
+  INVITE_PERMISSIONS,
+  client: () => client,
+  tokenInUse,
+};

@@ -81,6 +81,7 @@ async function main() {
       DASHBOARD_PASSWORD: OWNER_PASS,
       DISCORD_TOKEN: '',
       GUILD_ID: '',
+      CLIENT_ID: '123456789012345678', // invite link test ke liye (bot offline bhi)
     },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
@@ -168,6 +169,23 @@ async function main() {
 
     const stop = await call('/api/bot/stop', { method: 'POST', cookie: owner.cookie });
     check('offline bot ko stop karna safe hai', stop.status === 200 && stop.json?.ok === true);
+
+    /* ---------- 4b. commands connect + invite ---------- */
+    console.log('\n4b) Commands connect + invite link');
+    const regOffline = await call('/api/bot/register', { method: 'POST', body: {}, cookie: owner.cookie });
+    check('offline bot pe register -> 409 saaf error', regOffline.status === 409 && /online nahi/.test(regOffline.json?.error ?? ''), JSON.stringify(regOffline.json));
+
+    const invite = await call('/api/bot/invite', { cookie: owner.cookie });
+    check('CLIENT_ID se invite link banti hai', invite.status === 200 && /discord\.com\/oauth2\/authorize/.test(invite.json?.url ?? ''), JSON.stringify(invite.json));
+    check('invite me applications.commands scope hai', /applications\.commands/.test(decodeURIComponent(invite.json?.url ?? '')), invite.json?.url);
+    check('invite me bot permission hai', /permissions=\d+/.test(invite.json?.url ?? ''));
+
+    const inviteAnon = await call('/api/bot/invite');
+    check('bina login invite -> 401', inviteAnon.status === 401, String(inviteAnon.status));
+
+    const statusWithCmds = await call('/api/status', { cookie: owner.cookie });
+    check('status me register info hai', Boolean(statusWithCmds.json?.bot?.register) === true, JSON.stringify(statusWithCmds.json?.bot?.register));
+    check('status me inviteUrl hai', /oauth2/.test(statusWithCmds.json?.bot?.inviteUrl ?? ''));
 
     /* ---------- 5. access keys ---------- */
     console.log('\n5) Access keys — kisko access de sakte ho');

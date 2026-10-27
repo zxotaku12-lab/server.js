@@ -155,6 +155,8 @@
     stateEl.textContent = bot.state;
     stateEl.className = `pill ${bot.state}`;
 
+    renderCommands(bot);
+
     $('#bot-tag').textContent = bot.tag || '—';
     $('#bot-guilds').textContent = fmt(bot.guilds);
     $('#bot-ping').textContent = bot.ping != null ? `${bot.ping} ms` : '—';
@@ -165,6 +167,50 @@
     else if (bot.state === 'connecting') hint.textContent = '⏳ Login ho raha hai…';
     else if (bot.state === 'error') hint.textContent = `❌ ${bot.error || 'Login fail'} — token check karo.`;
     else hint.textContent = 'Token paste karke "Link bot" dabao. Token sirf data/config.json me save hota hai.';
+  }
+
+  /** Commands ka register status — "bot se connected" ya nahi */
+  function renderCommands(bot) {
+    const reg = bot.register || {};
+    const pill = $('#cmd-state');
+    const hint = $('#cmd-hint');
+    const registerBtn = $('#register-btn');
+    const inviteBtn = $('#invite-btn');
+    const inviteHint = $('#invite-hint');
+
+    const canControl = me?.permissions?.controlBot;
+
+    if (reg.mode === 'guild') {
+      pill.textContent = `${reg.count} registered`;
+      pill.className = 'pill ready';
+      hint.innerHTML = `✅ <b>${reg.count} commands</b> <code>${escapeHtml(reg.guild || 'server')}</code> me live hain — Discord me turant dikhengi.`;
+    } else if (reg.mode === 'global') {
+      pill.textContent = `${reg.count} global`;
+      pill.className = 'pill ready';
+      hint.innerHTML = `✅ <b>${reg.count} commands</b> globally register ho gayi — Discord me ~1 ghante me dikhengi.<br/>Turant chahiye? <code>GUILD_ID</code> set karo.`;
+    } else if (reg.mode === 'error') {
+      pill.textContent = 'error';
+      pill.className = 'pill error';
+      hint.innerHTML = `❌ Register fail: ${escapeHtml(reg.error || 'unknown')} — dobara try karo.`;
+    } else if (reg.needsRegister) {
+      pill.textContent = 'registering…';
+      pill.className = 'pill connecting';
+      hint.textContent = '⏳ Bot online hai — commands register ho rahi hain…';
+    } else if (!bot.ready) {
+      pill.textContent = 'bot offline';
+      pill.className = 'pill off';
+      hint.innerHTML = 'Pehle token se bot link karo — uske baad commands apne aap register ho jaayengi.';
+    } else {
+      pill.textContent = 'pending';
+      pill.className = 'pill connecting';
+    }
+
+    registerBtn.disabled = !canControl || !bot.ready;
+    inviteBtn.disabled = !bot.inviteUrl;
+
+    inviteHint.innerHTML = bot.inviteUrl
+      ? `🔗 <a href="${bot.inviteUrl}" target="_blank" rel="noopener">Invite link kholo</a> — isme <code>applications.commands</code> scope hai, isliye commands dikhengi.`
+      : 'Invite link ke liye bot link karo (ya <code>CLIENT_ID</code> env set karo).';
   }
 
   async function loadGuilds() {
@@ -189,6 +235,33 @@
       $('#token-input').value = '';
       toast('Bot link ho raha hai… 🚀');
       setTimeout(refreshStatus, 1200);
+    } catch (err) {
+      toast(err.message, 'err');
+    }
+  });
+
+  /* ---------------- Commands connect + invite ---------------- */
+  $('#register-btn').addEventListener('click', async () => {
+    const btn = $('#register-btn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Register ho raha hai…';
+
+    try {
+      const data = await api('/api/bot/register', { method: 'POST', body: {} });
+      toast(data.mode === 'guild' ? `✅ ${data.count} commands server me live!` : `✅ ${data.count} commands globally register ho gayi (1 ghanta tak lag sakta hai).`);
+      refreshStatus();
+    } catch (err) {
+      toast(err.message, 'err');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '⌨️ Commands connect karo';
+    }
+  });
+
+  $('#invite-btn').addEventListener('click', async () => {
+    try {
+      const data = await api('/api/bot/invite');
+      window.open(data.url, '_blank', 'noopener');
     } catch (err) {
       toast(err.message, 'err');
     }

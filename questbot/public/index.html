@@ -76,10 +76,28 @@
                 <button class="btn primary" type="submit" id="start-btn">Link bot</button>
               </form>
 
-              <div class="row gap">
+              <div class="row gap wrap">
                 <button class="btn danger" id="stop-btn">Stop</button>
                 <button class="btn ghost" id="restart-btn">Restart</button>
               </div>
+
+              <hr class="sep" />
+
+              <div class="cmd-box">
+                <div class="cmd-head">
+                  <span>⌨️ Slash commands</span>
+                  <span class="pill" id="cmd-state">—</span>
+                </div>
+                <p class="hint" id="cmd-hint" style="margin-top: 6px">
+                  Commands register karo aur bot ko server me add karo — dono yahin se.
+                </p>
+                <div class="row gap wrap" style="margin-top: 10px">
+                  <button class="btn primary" id="register-btn">⌨️ Commands connect karo</button>
+                  <button class="btn ghost" id="invite-btn">🔗 Bot ko server me add karo</button>
+                </div>
+                <p class="hint" id="invite-hint" style="margin-top: 8px"></p>
+              </div>
+
               <p class="hint" id="bot-hint">Token sirf tumhare server ke <code>data/config.json</code> me save hota hai.</p>
             </div>
 

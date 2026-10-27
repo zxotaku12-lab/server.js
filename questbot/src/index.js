@@ -206,6 +206,24 @@ app.get('/api/guilds', requireAuth, (_req, res) => {
   res.json({ guilds: bot.guildList(), bot: bot.getStatus() });
 });
 
+/** Bot invite link — isme `applications.commands` scope hai (iske bina commands dikhti nahi) */
+app.get('/api/bot/invite', requireAuth, (_req, res) => {
+  const url = bot.inviteUrl();
+  if (!url) {
+    return res.status(400).json({
+      error: 'Invite link nahi ban sakti — pehle bot ko token se link karo, ya CLIENT_ID env set karo.',
+    });
+  }
+  res.json({ url, permissions: bot.INVITE_PERMISSIONS, clientId: bot.clientId() });
+});
+
+/** Commands ko bot se "connect" karo — slash commands register */
+app.post('/api/bot/register', requireRole('bot.control'), async (_req, res) => {
+  const result = await bot.reregister();
+  if (!result.ok) return res.status(409).json(result);
+  res.json({ ok: true, ...result, commands: bot.getStatus().commandNames });
+});
+
 /* ------------------------------------------------------------------ */
 /*  Quests + stats (dashboard)                                         */
 /* ------------------------------------------------------------------ */
