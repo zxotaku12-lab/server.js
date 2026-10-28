@@ -92,6 +92,12 @@ Server owner `/setlogs` ke baad `/antinuke on limit:3` se alerts enable kare. `/
 | `GET /terms-of-service` | ToS page (Developer Portal ke liye) |
 | `GET /privacy-policy` | Privacy Policy page (Developer Portal ke liye) |
 
+## GitHub Actions: community bot (temporary runner)
+
+Workflow **Community Bot (free runner)** Quest bot se alag hai. Repository Actions secrets me `COMMUNITY_DISCORD_TOKEN` (is bot ka alag token) aur optional `COMMUNITY_GUILD_ID` (server ID) set karo; secrets chat ya repository files me kabhi na likho. Quest bot ka token is workflow me use mat karo: ek hi application ke do bots ek saath command registrations overwrite kar sakte hain. Bot ke Developer Portal me Server Members Intent on aur Interactions Endpoint URL khaali rakho.
+
+Workflow default branch me hone ke baad Actions tab se manually start kar sakte ho; schedule sirf default branch se chalta hai. Har 6 ghante par run attempt hota hai, aur process 5 ghante 45 minute baad band hota hai. Scheduling delays, repository inactivity, Actions limits aur usage charges ke kaaran offline gaps ya stoppage ho sakte hain; ye 24/7 hosting nahi hai. GitHub-hosted runner ephemeral hai: **XP, settings, warnings, giveaways aur ticket configuration har run ke baad mit jayenge**. Public repo me in data files ko Actions cache par save nahi karte, kyunki cache confidential storage nahi hai. Permanent data aur reliable hosting ke liye persistent disk/database ke saath host karein. Existing tickets ke channels Discord par rahenge, lekin bot configuration reset ho jayegi.
+
 ## Setup
 
 ### 1. Environment variables
