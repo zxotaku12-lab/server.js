@@ -43,6 +43,44 @@ Har moderation command me ye sab built-in hai:
 
 Commands `commands/` folder me hain. Naya file daalo, command **apne aap** teen jagah pahunch jaati hai — Gateway bot, HTTP endpoint, aur `npm run register`. Dobara kahin hardcode nahi karna padta.
 
+## 153 command actions
+
+Bot me 50 top-level slash commands aur unke subcommands mila kar **153 invocable actions** hain (152 alag top-level slash commands nahi). Inme moderation, roles, welcome, leveling aur giveaways ke saath kaafi simple utility/timepass actions bhi shamil hain. Discord ki top-level slash command limit ko dhyan me rakh kar utilities group ki gayi hain:
+
+- `/text-tools` — text transformations aur counts
+- `/math-tools` — single-number math
+- `/calculate` — two-number calculations
+- `/convert` — unit conversions
+- `/random-pick` — games aur ideas ke liye random categories
+
+`/help` me har group ke subcommand names milte hain. Example: `/calculate add first:2 second:3`, `/convert km-miles value:10`, `/random-pick animal`. Gateway-only commands aur button giveaways ke liye Developer Portal se Interactions Endpoint URL hata kar Gateway bot use karein.
+
+## Ticket system
+
+`/ticket-panel staff:@Support category:Support` se panel bhejo (role aur category optional). Button se member ka private channel khulta hai, aur owner ya configured staff usko close kar sakte hain. Command ke liye Manage Server aur bot ko Manage Channels, category aur role overwrites manage karne ki permissions chahiye. Bot ka role staff role se upar rakhein aur channel/category me access dein. Ek member ka ek hi open ticket ho sakta hai. Panel ki staff/category settings server-wide hain; command dobara chalane se naye tickets ke liye latest settings apply hoti hain; existing ticket channels ke permissions automatically update nahi hote. Close karne par channel **delete** hota hai; transcript/backup nahi banta. Gateway bot online rakho aur Interactions Endpoint URL khaali rakho.
+
+## Extra moderation aur timepass
+
+- `/unban`, `/slowmode`, `/nickname`: respective Ban Members, Manage Channels ya Manage Nicknames permissions aur Gateway bot chahiye.
+- `/warn`, `/warnings`, `/unwarn`: Moderate Members permission ke saath warning records manage karo; `/warnings` latest 10 dikhata hai. Warning data `data/warnings.json` me rehta hai; production me persistent disk zaroori hai.
+- `/choose`, `/dice`, `/joke`, `/compliment`, `/motivation`, `/fortune`, `/rate`, `/reverse`, `/uppercase`, `/lowercase`, `/wordcount`, `/avatar`, `/timestamp` timepass aur utilities ke liye hain. `/help` current list dikhata hai.
+
+## Naye role aur giveaway commands
+
+- `/role-create name`, `/role-delete role`, `/role-add user role`, `/role-remove user role`: Manage Roles permission aur role hierarchy zaroori hai. Naya role bina permissions ke banta hai.
+- `/giveaway-start prize minutes winners`: Manage Server permission se giveaway shuru karo; button se join/leave. `/giveaway-end message-id` se jaldi khatam karo. Gateway bot online hona chahiye aur Discord Developer Portal me Interactions Endpoint URL hataana hoga, taaki button interactions Gateway par aayein.
+- Giveaways `data/giveaways.json` me save hote hain; restart ke baad scheduler pending giveaways resume karta hai. Persistent disk zaroori hai, warna deployment/restart par data kho sakta hai. Bot offline ho to result online aane par announce hota hai. Message ya channel delete hone ya permissions missing hone par announcement nahi hogi.
+
+### Custom welcome embed
+
+`/setwelcome channel:#welcome` se channel set karo. `/welcome-embed set` se title, description, hex color aur HTTPS image URL customize karo (sirf diye hue fields badlenge). Description/title me `{user}`, `{username}`, `{server}` aur `{count}` placeholders use kar sakte ho. `/welcome-embed preview` se private preview dekho, `/welcome-embed reset` se default embed wapas lao. Image remove karne ke liye `image:none` do. Commands ke liye Manage Server permission aur Gateway bot chahiye. Bot ko welcome channel me View Channel, Send Messages aur Embed Links permissions do; SERVER MEMBERS intent on rakho.
+
+### Anti-nuke alerts
+
+Server owner `/setlogs` ke baad `/antinuke on limit:3` se alerts enable kare. `/antinuke status` aur `/antinuke off` bhi available hain. Bot ko View Audit Log permission aur log channel par View Channel + Send Messages chahiye. 60 seconds me ek executor ke channel/role deletion, ban, kick, webhook creation ya bot addition ki combined limit cross hone par alert milta hai. Owner aur bot ke apne actions exempt hain.
+
+**Default alert-only** hai. Owner `/antinuke on action:strip` se optional role removal enable kar sakta hai: threshold par bot executor ke manageable roles jinme dangerous permissions hain unhe remove karne ki koshish karta hai. Iske liye Manage Roles aur bot role hierarchy zaroori hai. False positives se legitimate staff ke roles bhi hat sakte hain; managed, higher roles aur @everyone ki permissions nahi hatengi. Ye actions block ya reverse nahi karta. Logs miss ho sakte hain jab bot offline ho, permission hat jaaye ya log channel delete ho; ye complete anti-nuke protection ka substitute nahi hai. Alert counters memory me hain aur restart par reset hote hain. Discord gateway use karein. Is project me **153 invocable command actions** hain: 50 top-level slash commands ke andar kai subcommands hain. `/help` se poori list dekho.
+
 ## Endpoints
 
 | Route | Purpose |

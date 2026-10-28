@@ -11,7 +11,7 @@
     "test:settings": "node scripts/settings.test.js",
     "test:level": "node scripts/level.test.js",
     "check": "node scripts/selfcheck.js",
-    "test": "node scripts/mod.test.js && node scripts/settings.test.js && node scripts/level.test.js && node scripts/selfcheck.js"
+    "test": "node scripts/mod.test.js && node scripts/settings.test.js && node scripts/level.test.js && node scripts/selfcheck.js && node scripts/extras.test.js && node scripts/antinuke.test.js && node scripts/welcome.test.js && node scripts/community.test.js && node scripts/toolbox.test.js && node scripts/tickets.test.js"
   },
   "engines": {
     "node": ">=18"
