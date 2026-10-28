@@ -30,17 +30,20 @@ module.exports = [
     async execute(interaction) {
       // Registry ko execute ke andar require karte hain — load-time circular dependency se bachne ke liye.
       const { getCommands, commandUsage } = require('./index');
-      const { map } = getCommands();
+      const { map, json } = getCommands();
 
       const lines = [...map.values()]
         .sort((a, b) => a.data.name.localeCompare(b.data.name))
         .map((cmd) => `\`${commandUsage(cmd)}\` — ${cmd.data.description || BLURB[cmd.data.name] || ''}`);
 
+      const grouped = json.filter(c => c.options?.some(o => o.type === 1));
+      const total = json.reduce((n, c) => n + (c.options?.some(o => o.type === 1) ? c.options.filter(o => o.type === 1).length : 1), 0);
       const embed = new EmbedBuilder()
         .setTitle('📖 Commands')
         .setColor(0x5865f2)
         .setDescription(lines.join('\n') || 'Koi command load nahi hui 😅')
-        .setFooter({ text: `${map.size} commands · /help` });
+        .setFooter({ text: `${total} actions · ${map.size} slash commands · /help` });
+      for (const group of grouped) embed.addFields({ name: `/${group.name} subcommands`, value: group.options.filter(o => o.type === 1).map(o => o.name).join(' · ') });
 
       await interaction.reply({ embeds: [embed] });
     },

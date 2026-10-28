@@ -1,0 +1,21 @@
+const assert = require('assert');
+const { buildWelcome } = require('../lib/welcome');
+const command = require('../commands/welcome-embed');
+const settings = require('../lib/settings');
+const member = { id: '123', user: { username: 'Alice', displayAvatarURL: () => 'https://example.com/avatar.png' }, guild: { id: 'welcome-test', name: 'Test', memberCount: 10 } };
+(async () => {
+  const config = { welcomeTitle: 'Welcome {username}', welcomeDescription: '{user} {server} #{count}', welcomeColor: 0 };
+  const embed = buildWelcome(member, config).toJSON();
+  assert.equal(embed.title, 'Welcome Alice'); assert.equal(embed.description, '<@123> Test #10'); assert.equal(embed.color, 0);
+  assert(command.data.toJSON().default_member_permissions);
+  let reply;
+  const i = { guild: member.guild, member, memberPermissions: { has: () => false }, options: { getSubcommand: () => 'preview' }, reply: async p => { reply = p; } };
+  await command.execute(i); assert.match(reply.content, /Manage Server/);
+  i.memberPermissions.has = () => true; await command.execute(i); assert(reply.embeds); assert.deepStrictEqual(reply.allowedMentions, { parse: [] });
+  i.options = { getSubcommand: () => 'set', getString: name => ({ color: '#xyzxyz' }[name] ?? null) };
+  await command.execute(i); assert.match(reply.content, /hex/);
+  i.options.getString = name => ({ title: 'Hey {username}', color: '#000000' }[name] ?? null);
+  await command.execute(i); assert.equal(settings.get(member.guild.id).welcomeColor, 0); assert.equal(settings.get(member.guild.id).welcomeTitle, 'Hey {username}');
+  settings.unset(member.guild.id, ['welcomeTitle', 'welcomeColor']);
+  console.log('Welcome embed tests passed');
+})().catch(e => { console.error(e); process.exitCode = 1; });

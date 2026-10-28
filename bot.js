@@ -25,17 +25,20 @@ const {
   GatewayIntentBits,
   Partials,
   Events,
-  EmbedBuilder,
   ActivityType,
 } = require('discord.js');
 
 const { getCommands } = require('./commands');
 const { load, save } = require('./store');
 const settings = require('./lib/settings');
+const giveaways = require('./lib/giveaways');
+const antinuke = require('./lib/antinuke');
+const { buildWelcome } = require('./lib/welcome');
+const tickets = require('./lib/tickets');
 const { levelFromXp } = require('./lib/levels');
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages],
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildModeration],
   partials: [Partials.GuildMember],
 });
 
@@ -54,6 +57,7 @@ client.saveSettings = saveSettings;
 
 /* ---------------- Ready + auto register ---------------- */
 client.once(Events.ClientReady, async (c) => {
+  giveaways.startScheduler(c);
   console.log(`[bot] ✅ ${c.user.tag} live hai! ${c.guilds.cache.size} servers me.`);
   c.user.setActivity(`/help | ${registry.names.length} commands`, { type: ActivityType.Watching });
 
@@ -77,8 +81,21 @@ client.once(Events.ClientReady, async (c) => {
   }
 });
 
+client.on(Events.GuildAuditLogEntryCreate, (entry, guild) => {
+  antinuke.handle(entry, guild).catch(err => console.error('[antinuke] error:', err));
+});
+
 /* ---------------- Slash command handler ---------------- */
 client.on(Events.InteractionCreate, async (interaction) => {
+  if (interaction.isButton() && ['ticket-open', 'ticket-close'].includes(interaction.customId)) {
+    try { await (interaction.customId === 'ticket-open' ? tickets.open(interaction) : tickets.close(interaction)); }
+    catch (err) { console.error('[tickets] interaction error:', err); }
+    return;
+  }
+  if (interaction.isButton() && interaction.customId === 'giveaway-enter') {
+    try { await giveaways.enter(interaction); } catch (err) { console.error('[giveaway] Entry error:', err); }
+    return;
+  }
   if (!interaction.isChatInputCommand()) return;
   const command = client.commands.get(interaction.commandName);
   if (!command) return;
@@ -114,16 +131,8 @@ client.on(Events.GuildMemberAdd, async (member) => {
     ? member.guild.channels.cache.get(settings.welcomeChannelId)
     : member.guild.systemChannel;
   if (welcomeChannel?.isTextBased()) {
-    const embed = new EmbedBuilder()
-      .setTitle('🎉 Welcome!')
-      .setColor(0x57f287)
-      .setThumbnail(member.user.displayAvatarURL({ size: 128 }))
-      .setDescription(
-        `Namaste ${member}! **${member.guild.name}** me swagat hai! 🥳\n\n` +
-          `📜 Rules padho, 👋 #general me intro do, aur maze karo!\n\n` +
-          `👥 Ab hum **${member.guild.memberCount}** members hain!`
-      );
-    welcomeChannel.send({ content: `${member}`, embeds: [embed] }).catch(() => {});
+    const embed = buildWelcome(member, settings);
+    welcomeChannel.send({ content: `<@${member.id}>`, embeds: [embed], allowedMentions: { users: [member.id] } }).catch(() => {});
   }
 
   if (settings.logChannelId) {
