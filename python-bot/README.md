@@ -146,9 +146,37 @@ python tests/smoke_cogs.py         # token/network ke bina saare cogs load test
 
 ## Deployment (short)
 
+Pehle clear kar lein: **bot tab online hota hai jab `bot.py` kisi aise machine pe chale jahan `discord.com` reachable ho aur `TOKEN` set ho.** Tests/CI se bot online nahi hota.
+
+**A) Docker (sabse simple)**
+
+```bash
+cd python-bot
+docker build -t gogetas-pet .
+docker run -d --name gogetas-pet --restart unless-stopped --env-file .env gogetas-pet
+docker logs -f gogetas-pet
+```
+
+**B) VPS + systemd (free tier ke liye best)**
+
+`deploy/gogetas-pet.service` use karo — file ke top pe 6-step instructions hain. Short version:
+
+```bash
+sudo cp deploy/gogetas-pet.service /etc/systemd/system/
+sudo systemctl daemon-reload && sudo systemctl enable --now gogetas-pet
+journalctl -u gogetas-pet -f     # "Synced N slash commands" dikhna chahiye
+```
+
+**C) Render (background worker)**
+
+`render.yaml` me blueprint hai — Render → New Blueprint → path `python-bot/render.yaml`, phir secrets dashboard me daalo. Worker paid plan me aata hai.
+
+**Online hone ka check:** logs me `Synced N slash commands` + `Logged in as <bot>#1234` aana chahiye, aur Discord me bot **online** dikhega.
+
 - Host pe Python 3.11+ (3.13 pe `audioop-lts` khud aa jayega).
-- `python bot.py` ko kisi process manager se chalao (systemd / pm2 / panel), working directory `python-bot/` rakho taaki `.env`, `knowledge/` aur DB paths resolve hon.
+- Working directory `python-bot/` rakho taaki `.env`, `knowledge/` aur DB paths resolve hon.
 - SQLite files writable hone chahiye (`activity.db`, `cogs/*.db`).
 - Message Content intent Discord Developer Portal me on karna zaroori hai (AutoMod, ghostping, AI chat sab isi pe depend karte hain).
+
 
 Credits: **gogeta_gg**

@@ -1,0 +1,42 @@
+# Gogeta's Pet — systemd unit (VPS / free tier ke liye)
+#
+# 1) Repo clone karo, e.g. /opt/gogetas-pet  (python-bot/ folder ka content root ho)
+# 2) venv banao:  python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+# 3) .env bharo:  /opt/gogetas-pet/.env   (chmod 600, owner wahi user)
+# 4) Ye file:     /etc/systemd/system/gogetas-pet.service
+# 5) sudo systemctl daemon-reload && sudo systemctl enable --now gogetas-pet
+# 6) Logs:        journalctl -u gogetas-pet -f
+
+[Unit]
+Description=Gogeta's Pet Discord bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=gogeta
+Group=gogeta
+WorkingDirectory=/opt/gogetas-pet
+
+# .env bot khud padhta hai (env_loader), lekin secrets environment me bhi de sakte ho.
+EnvironmentFile=-/opt/gogetas-pet/.env
+ExecStart=/opt/gogetas-pet/.venv/bin/python bot.py
+
+# Crash hone pe khud restart, aur bar-bar crash pe thoda ruk ke
+Restart=always
+RestartSec=5
+StartLimitIntervalSec=300
+StartLimitBurst=10
+
+# Thodi si safety
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ReadWritePaths=/opt/gogetas-pet
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=gogetas-pet
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,39 @@
+# Render Blueprint for Gogeta's Pet (background worker — koi HTTP port nahi).
+#
+# Naya Blueprint banate waqt "Blueprint Path" me `python-bot/render.yaml` do.
+# Secrets Render dashboard me daalo (sync: false means repo me value nahi).
+#
+# Note: Render pe background workers paid plan me aate hain. Free ke liye VPS +
+# systemd use karo (deploy/gogetas-pet.service) ya koi worker-friendly host.
+services:
+  - type: worker
+    name: gogetas-pet
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: python bot.py
+    autoDeploy: false
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.6"
+      - key: TOKEN
+        sync: false
+      - key: GOGETAS_PET_OWNER_ID
+        sync: false
+      - key: DISCORD_GUILD_ID
+        sync: false
+      - key: EMOJI_SOURCE_GUILD_ID
+        sync: false
+      - key: TICKET_PANEL_CHANNEL_ID
+        sync: false
+      # AI: koi ek provider key chahiye, warna bot chalega par AI replies off
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: AI_ENABLED
+        value: "true"
+      - key: TICKET_AI_ENABLED
+        value: "true"
