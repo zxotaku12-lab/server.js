@@ -64,6 +64,27 @@ Baaki saare knobs (AI tuning, TicketAI, QuestBot/invite, logs) `.env.example` me
 
 ---
 
+## Commands ko Discord pe register karna
+
+`bot.py` jab start hota hai tab khud `setup_hook` me saari cogs load karke `tree.sync()` karta hai — matlab **normal run me commands apne aap connect ho jaate hain**. Sirf ek baar push karna hai, bot chalaye bina:
+
+```bash
+# test server pe instant (guild scope turant dikhta hai)
+python scripts/sync_commands.py --guild <GUILD_ID>
+
+# poore bot ke liye global (propagate hone me ~1 ghanta)
+python scripts/sync_commands.py
+
+# scope se commands hatao
+python scripts/sync_commands.py --guild <GUILD_ID> --clear
+```
+
+Script wahi rule use karta hai jo `bot.py` use karta hai (sirf `setup()` wali files), token `.env` ke `TOKEN` se padhta hai, aur sync se peile batata hai kitni commands local me mili.
+
+> Note: global aur guild scope alag hote hain. Guild me sync karne se sirf usi server me commands dikhengi; global sync sab jagah jaata hai (thoda late).
+
+---
+
 ## Tests
 
 ```bash
