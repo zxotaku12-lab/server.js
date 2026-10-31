@@ -42,6 +42,57 @@ def _cog_of(obj) -> str:
     return "bot.py"
 
 
+def _params_from_app(command) -> list[dict]:
+    """Slash/hybrid command ke parameters (name, description, required, type)."""
+    params = []
+    for param in getattr(command, "parameters", []) or []:
+        params.append({
+            "name": param.name,
+            "description": param.description or "",
+            "required": bool(param.required),
+            "type": getattr(param.type, "name", str(param.type)),
+        })
+    return params
+
+
+def _params_from_prefix(command) -> list[dict]:
+    """Pure prefix command ke params — clean_params signature se."""
+    params = []
+    try:
+        for name, param in command.clean_params.items():
+            if name in {"self", "ctx"}:
+                continue
+            required = param.default is param.empty
+            annotation = getattr(param.annotation, "__name__", None)
+            params.append({
+                "name": name,
+                "description": "",
+                "required": required,
+                "type": (annotation or "str").lower(),
+            })
+    except Exception:  # noqa: BLE001 - best effort only
+        pass
+    return params
+
+
+def _permissions(command) -> list[str]:
+    perms = getattr(command, "default_permissions", None)
+    if perms is None:
+        return []
+    try:
+        return [name for name, value in perms if value]
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def _usage(command) -> str:
+    parts = []
+    for param in command.get("params", []):
+        parts.append(f"<{param['name']}>" if param["required"] else f"[{param['name']}]")
+    prefix = "/" if command["type"] in {"slash", "slash+prefix", "group"} else ""
+    return " ".join([f"{prefix}{command['name']}"] + parts)
+
+
 async def build() -> dict:
     intents = discord.Intents.default()
     intents.message_content = True
@@ -58,29 +109,71 @@ async def build() -> dict:
 
     entries: dict[str, dict] = {}
 
-    def add(name, cog, kind, description, group=None):
+    def add(name, cog, kind, description, group=None, params=None, perms=None, aliases=None):
         entry = entries.setdefault(name, {
-            "name": name, "cog": cog, "type": kind, "description": description, "group": group,
+            "name": name,
+            "cog": cog,
+            "type": kind,
+            "description": description or "",
+            "group": group,
+            "params": params or [],
+            "permissions": perms or [],
+            "aliases": aliases or [],
         })
         # hybrid commands show up in both trees; the prefix pass knows better
         if entry["type"] == "slash" and kind == "slash+prefix":
             entry["type"] = kind
+        if params:
+            entry["params"] = params
+        if perms:
+            entry["permissions"] = perms
+        if aliases:
+            entry["aliases"] = aliases
 
+    # prefix / hybrid pass — has the real prefix-side metadata
     for cmd in bot.walk_commands():
         if getattr(cmd, "parent", None):
             continue
         kind = "slash+prefix" if isinstance(cmd, commands.HybridCommand) else "prefix"
-        add(cmd.qualified_name, cmd.cog_name or "bot.py", kind,
-            (cmd.description or cmd.help or "").strip().split("\n")[0])
+        app_command = getattr(cmd, "app_command", None)
+        params = _params_from_app(app_command) if app_command is not None else _params_from_prefix(cmd)
+        add(
+            cmd.qualified_name,
+            cmd.cog_name or "bot.py",
+            kind,
+            (cmd.description or cmd.help or "").strip().split("\n")[0],
+            params=params,
+            perms=_permissions(app_command) if app_command is not None else [],
+            aliases=list(cmd.aliases or []),
+        )
 
+    # slash pass — plain slash commands + groups with their children
     for top in bot.tree.get_commands():
         cog = _cog_of(top)
         if isinstance(top, discord.app_commands.Group):
             add(top.name, cog, "group", top.description or "")
             for child in top.walk_commands():
-                add(child.qualified_name, cog, "slash", child.description or "", group=top.name)
+                add(
+                    child.qualified_name,
+                    cog,
+                    "slash",
+                    child.description or "",
+                    group=top.name,
+                    params=_params_from_app(child),
+                    perms=_permissions(child),
+                )
         else:
-            add(top.name, cog, "slash", top.description or "")
+            add(
+                top.name,
+                cog,
+                "slash",
+                top.description or "",
+                params=_params_from_app(top),
+                perms=_permissions(top),
+            )
+
+    for entry in entries.values():
+        entry["usage"] = _usage(entry)
 
     by_cog: dict[str, list] = {}
     for entry in entries.values():
@@ -100,6 +193,7 @@ async def build() -> dict:
             "slash_all": sum(1 for _ in bot.tree.walk_commands()),
             "prefix": sum(1 for _ in bot.walk_commands()),
             "unique_commands": len(entries),
+            "with_params": sum(1 for e in entries.values() if e["params"]),
         },
         "failed": failed,
         "cogs": cogs,
@@ -112,7 +206,8 @@ def main() -> int:
     OUT.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
     t = data["totals"]
     print(f"[site] {OUT.relative_to(ROOT)} likh diya — {t['unique_commands']} commands, "
-          f"{t['cogs_loaded']} cogs, {t['slash_all']} slash (incl. subcommands)")
+          f"{t['cogs_loaded']} cogs, {t['slash_all']} slash (incl. subcommands), "
+          f"{t['with_params']} with parameters")
     for item in data["failed"]:
         print(f"[site] FAILED cog {item['cog']}: {item['error']}")
     return 0

@@ -26,6 +26,9 @@
       <a href="#commands">Commands</a>
       <a href="#setup">Setup</a>
       <a href="#connect">Connect</a>
+      <button class="btn btn-icon" id="theme-toggle" type="button" aria-label="Toggle theme" title="Light / dark">
+        <span class="theme-icon" aria-hidden="true">◐</span>
+      </button>
       <a class="btn btn-ghost" href="https://github.com/zxotaku12-lab/server.js" target="_blank" rel="noreferrer">GitHub ↗</a>
     </nav>
   </div>
@@ -228,6 +231,51 @@ python bot.py                                               # startup pe khud sy
 </footer>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<dialog class="cmd-modal" id="cmd-modal" aria-labelledby="cmd-modal-title">
+  <div class="cmd-modal-inner">
+    <header class="cmd-modal-head">
+      <div>
+        <p class="cmd-modal-cog" id="cmd-modal-cog"></p>
+        <h3 id="cmd-modal-title"><code id="cmd-modal-name"></code></h3>
+      </div>
+      <button class="copy close" type="button" id="cmd-modal-close" aria-label="Close">✕</button>
+    </header>
+
+    <div class="cmd-modal-badges" id="cmd-modal-badges"></div>
+    <p class="cmd-modal-desc" id="cmd-modal-desc"></p>
+
+    <section class="cmd-modal-section">
+      <h4>Usage</h4>
+      <div class="usage-row">
+        <code id="cmd-modal-usage"></code>
+        <button class="btn btn-tiny" type="button" id="cmd-modal-copy">Copy</button>
+      </div>
+    </section>
+
+    <section class="cmd-modal-section" id="cmd-modal-params-wrap" hidden>
+      <h4>Parameters</h4>
+      <table class="param-table">
+        <thead><tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+        <tbody id="cmd-modal-params"></tbody>
+      </table>
+    </section>
+
+    <section class="cmd-modal-section" id="cmd-modal-aliases-wrap" hidden>
+      <h4>Aliases</h4>
+      <p id="cmd-modal-aliases" class="mono"></p>
+    </section>
+
+    <section class="cmd-modal-section" id="cmd-modal-perms-wrap" hidden>
+      <h4>Default permissions</h4>
+      <p id="cmd-modal-perms" class="mono"></p>
+    </section>
+
+    <footer class="cmd-modal-foot">
+      <span class="note">Deep link: <code id="cmd-modal-link"></code></span>
+    </footer>
+  </div>
+</dialog>
 
 <script src="app.js"></script>
 </body>

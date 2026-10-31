@@ -1,12 +1,13 @@
 {
-  "generated_at": "2026-10-31 06:37 UTC",
+  "generated_at": "2026-10-31 06:40 UTC",
   "totals": {
     "cogs_loaded": 20,
     "cogs_failed": 0,
     "slash_top_level": 56,
     "slash_all": 89,
     "prefix": 57,
-    "unique_commands": 89
+    "unique_commands": 89,
+    "with_params": 47
   },
   "failed": [],
   "cogs": [
@@ -18,168 +19,508 @@
           "cog": "Moderation",
           "type": "slash+prefix",
           "description": "Add a role to a member.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "member",
+              "description": "The member to give the role to.",
+              "required": true,
+              "type": "user"
+            },
+            {
+              "name": "role",
+              "description": "The role to add.",
+              "required": true,
+              "type": "role"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/addrole <member> <role>"
         },
         {
           "name": "ban",
           "cog": "Moderation",
           "type": "slash+prefix",
           "description": "Ban a member from the server.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "member",
+              "description": "The member to ban.",
+              "required": true,
+              "type": "user"
+            },
+            {
+              "name": "reason",
+              "description": "Why they're being banned.",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "delete_days",
+              "description": "Days of their messages to delete (0-7).",
+              "required": false,
+              "type": "integer"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/ban <member> [reason] [delete_days]"
         },
         {
           "name": "clearwarnings",
           "cog": "Moderation",
           "type": "slash+prefix",
           "description": "Clear all warnings for a member.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "member",
+              "description": "The member whose warnings should be cleared.",
+              "required": true,
+              "type": "user"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/clearwarnings <member>"
         },
         {
           "name": "delwarn",
           "cog": "Moderation",
           "type": "slash+prefix",
           "description": "Remove a single warning by its ID.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "warning_id",
+              "description": "The warning ID (shown in /warnings).",
+              "required": true,
+              "type": "integer"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/delwarn <warning_id>"
         },
         {
           "name": "kick",
           "cog": "Moderation",
           "type": "slash+prefix",
           "description": "Kick a member from the server.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "member",
+              "description": "The member to kick.",
+              "required": true,
+              "type": "user"
+            },
+            {
+              "name": "reason",
+              "description": "Why they're being kicked.",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/kick <member> [reason]"
         },
         {
           "name": "lock",
           "cog": "Moderation",
           "type": "slash+prefix",
           "description": "Lock a channel for everyone at or below your configured cutoff role \u2014 including Administrators.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "channel",
+              "description": "The channel to lock (defaults to the current channel).",
+              "required": false,
+              "type": "channel"
+            },
+            {
+              "name": "reason",
+              "description": "Why the channel is being locked.",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/lock [channel] [reason]"
         },
         {
           "name": "lockconfig",
           "cog": "Moderation",
           "type": "prefix",
           "description": "Configure the hierarchy cutoff used by /lock.",
-          "group": null
+          "group": null,
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "lockconfig"
         },
         {
           "name": "modlogs",
           "cog": "Moderation",
           "type": "slash+prefix",
           "description": "View a member's recent moderation history.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "member",
+              "description": "The member to check.",
+              "required": true,
+              "type": "user"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/modlogs <member>"
         },
         {
           "name": "nickname",
           "cog": "Moderation",
           "type": "slash+prefix",
           "description": "Change a member's nickname.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "member",
+              "description": "The member to rename.",
+              "required": true,
+              "type": "user"
+            },
+            {
+              "name": "nickname",
+              "description": "The new nickname (leave blank to reset).",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/nickname <member> [nickname]"
         },
         {
           "name": "prefix",
           "cog": "Moderation",
           "type": "slash+prefix",
           "description": "View or change this server's command prefix.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "new_prefix",
+              "description": "The new prefix to use (leave blank to just view the current one).",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/prefix [new_prefix]"
         },
         {
           "name": "purge",
           "cog": "Moderation",
           "type": "slash+prefix",
           "description": "Bulk delete messages in this channel.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "amount",
+              "description": "How many messages to delete (1-100).",
+              "required": true,
+              "type": "integer"
+            },
+            {
+              "name": "member",
+              "description": "Only delete messages from this member.",
+              "required": false,
+              "type": "user"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/purge <amount> [member]"
         },
         {
           "name": "removerole",
           "cog": "Moderation",
           "type": "slash+prefix",
           "description": "Remove a role from a member.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "member",
+              "description": "The member to remove the role from.",
+              "required": true,
+              "type": "user"
+            },
+            {
+              "name": "role",
+              "description": "The role to remove.",
+              "required": true,
+              "type": "role"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/removerole <member> <role>"
         },
         {
           "name": "roleall",
           "cog": "Moderation",
           "type": "slash+prefix",
           "description": "Give a role to every member who has another specific role.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "source_role",
+              "description": "Members with this role will receive the new role.",
+              "required": true,
+              "type": "role"
+            },
+            {
+              "name": "role",
+              "description": "The role to give them.",
+              "required": true,
+              "type": "role"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/roleall <source_role> <role>"
         },
         {
           "name": "rolerall",
           "cog": "Moderation",
           "type": "slash+prefix",
           "description": "Remove a role from every member in the server.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "role",
+              "description": "The role to remove from everyone.",
+              "required": true,
+              "type": "role"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/rolerall <role>"
         },
         {
           "name": "slowmode",
           "cog": "Moderation",
           "type": "slash+prefix",
           "description": "Set this channel's slowmode delay.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "seconds",
+              "description": "Delay in seconds (0 to disable, max 21600).",
+              "required": true,
+              "type": "integer"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/slowmode <seconds>"
         },
         {
           "name": "softban",
           "cog": "Moderation",
           "type": "slash+prefix",
           "description": "Ban then immediately unban a member, purging their recent messages.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "member",
+              "description": "The member to softban.",
+              "required": true,
+              "type": "user"
+            },
+            {
+              "name": "reason",
+              "description": "Why they're being softbanned.",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/softban <member> [reason]"
         },
         {
           "name": "timeout",
           "cog": "Moderation",
           "type": "slash+prefix",
           "description": "Timeout (mute) a member for a duration.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "member",
+              "description": "The member to timeout.",
+              "required": true,
+              "type": "user"
+            },
+            {
+              "name": "duration",
+              "description": "e.g. 30s, 10m, 2h, 7d",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "reason",
+              "description": "Why they're being timed out.",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/timeout <member> <duration> [reason]"
         },
         {
           "name": "unban",
           "cog": "Moderation",
           "type": "slash+prefix",
           "description": "Unban a user by their ID.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "user_id",
+              "description": "The ID of the user to unban.",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "reason",
+              "description": "Why they're being unbanned.",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/unban <user_id> [reason]"
         },
         {
           "name": "unlock",
           "cog": "Moderation",
           "type": "slash+prefix",
           "description": "Unlock this (or a given) channel, restoring exactly what /lock changed.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "channel",
+              "description": "The channel to unlock (defaults to the current channel).",
+              "required": false,
+              "type": "channel"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/unlock [channel]"
         },
         {
           "name": "untimeout",
           "cog": "Moderation",
           "type": "slash+prefix",
           "description": "Remove a member's timeout.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "member",
+              "description": "The member to remove timeout from.",
+              "required": true,
+              "type": "user"
+            },
+            {
+              "name": "reason",
+              "description": "Why the timeout is being removed.",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/untimeout <member> [reason]"
         },
         {
           "name": "warn",
           "cog": "Moderation",
           "type": "slash+prefix",
           "description": "Warn a member.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "member",
+              "description": "The member to warn.",
+              "required": true,
+              "type": "user"
+            },
+            {
+              "name": "reason",
+              "description": "Why they're being warned.",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/warn <member> [reason]"
         },
         {
           "name": "warnings",
           "cog": "Moderation",
           "type": "slash+prefix",
           "description": "View a member's warnings.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "member",
+              "description": "The member to check.",
+              "required": true,
+              "type": "user"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/warnings <member>"
         },
         {
           "name": "lockconfig set-role",
           "cog": "Moderation",
           "type": "slash",
           "description": "Set the role that /lock uses as its cutoff.",
-          "group": "lockconfig"
+          "group": "lockconfig",
+          "params": [
+            {
+              "name": "role",
+              "description": "Locking will affect this role and every role below it.",
+              "required": true,
+              "type": "role"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/lockconfig set-role <role>"
         },
         {
           "name": "lockconfig status",
           "cog": "Moderation",
           "type": "slash",
           "description": "Configure the hierarchy cutoff used by /lock.",
-          "group": "lockconfig"
+          "group": "lockconfig",
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/lockconfig status"
         }
       ]
     },
@@ -191,77 +532,175 @@
           "cog": "InviteTracker",
           "type": "group",
           "description": "Check invite stats.",
-          "group": null
+          "group": null,
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/invites"
         },
         {
           "name": "invites-config",
           "cog": "InviteTracker",
           "type": "group",
           "description": "Configure invite tracking.",
-          "group": null
+          "group": null,
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/invites-config"
         },
         {
           "name": "invites check",
           "cog": "InviteTracker",
           "type": "slash",
           "description": "Show a member's invite stats.",
-          "group": "invites"
+          "group": "invites",
+          "params": [
+            {
+              "name": "member",
+              "description": "Whose stats to show (defaults to you).",
+              "required": false,
+              "type": "user"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/invites check [member]"
         },
         {
           "name": "invites leaderboard",
           "cog": "InviteTracker",
           "type": "slash",
           "description": "Show the top inviters in this server.",
-          "group": "invites"
+          "group": "invites",
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/invites leaderboard"
         },
         {
           "name": "invites-config add",
           "cog": "InviteTracker",
           "type": "slash",
           "description": "Manually grant bonus invites to a member.",
-          "group": "invites-config"
+          "group": "invites-config",
+          "params": [
+            {
+              "name": "member",
+              "description": "\u2026",
+              "required": true,
+              "type": "user"
+            },
+            {
+              "name": "amount",
+              "description": "\u2026",
+              "required": true,
+              "type": "integer"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/invites-config add <member> <amount>"
         },
         {
           "name": "invites-config disable",
           "cog": "InviteTracker",
           "type": "slash",
           "description": "Disable invite tracking for this server.",
-          "group": "invites-config"
+          "group": "invites-config",
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/invites-config disable"
         },
         {
           "name": "invites-config enable",
           "cog": "InviteTracker",
           "type": "slash",
           "description": "Enable invite tracking for this server.",
-          "group": "invites-config"
+          "group": "invites-config",
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/invites-config enable"
         },
         {
           "name": "invites-config fake-age",
           "cog": "InviteTracker",
           "type": "slash",
           "description": "Set how new (in days) an account must be to get flagged as fake.",
-          "group": "invites-config"
+          "group": "invites-config",
+          "params": [
+            {
+              "name": "days",
+              "description": "\u2026",
+              "required": true,
+              "type": "integer"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/invites-config fake-age <days>"
         },
         {
           "name": "invites-config logchannel",
           "cog": "InviteTracker",
           "type": "slash",
           "description": "Set the channel invite tracking posts join/leave logs to.",
-          "group": "invites-config"
+          "group": "invites-config",
+          "params": [
+            {
+              "name": "channel",
+              "description": "\u2026",
+              "required": true,
+              "type": "channel"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/invites-config logchannel <channel>"
         },
         {
           "name": "invites-config remove",
           "cog": "InviteTracker",
           "type": "slash",
           "description": "Remove bonus invites from a member.",
-          "group": "invites-config"
+          "group": "invites-config",
+          "params": [
+            {
+              "name": "member",
+              "description": "\u2026",
+              "required": true,
+              "type": "user"
+            },
+            {
+              "name": "amount",
+              "description": "\u2026",
+              "required": true,
+              "type": "integer"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/invites-config remove <member> <amount>"
         },
         {
           "name": "invites-config reset",
           "cog": "InviteTracker",
           "type": "slash",
           "description": "Wipe a member's invite stats.",
-          "group": "invites-config"
+          "group": "invites-config",
+          "params": [
+            {
+              "name": "member",
+              "description": "\u2026",
+              "required": true,
+              "type": "user"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/invites-config reset <member>"
         }
       ]
     },
@@ -273,56 +712,139 @@
           "cog": "Automod",
           "type": "group",
           "description": "Gogeta AutoMod control center",
-          "group": null
+          "group": null,
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/automod"
         },
         {
           "name": "automod-incidents",
           "cog": "Automod",
           "type": "slash+prefix",
           "description": "View recent AutoMod incidents.",
-          "group": null
+          "group": null,
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/automod-incidents"
         },
         {
           "name": "automod config",
           "cog": "Automod",
           "type": "slash",
           "description": "Open the AutoMod control center without running setup.",
-          "group": "automod"
+          "group": "automod",
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/automod config"
         },
         {
           "name": "automod disable",
           "cog": "Automod",
           "type": "slash",
           "description": "Disable AutoMod.",
-          "group": "automod"
+          "group": "automod",
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/automod disable"
         },
         {
           "name": "automod links",
           "cog": "Automod",
           "type": "slash",
           "description": "Set the link policy: block every link, only configured classes, or allow all.",
-          "group": "automod"
+          "group": "automod",
+          "params": [
+            {
+              "name": "policy",
+              "description": "What to do with links from non-trusted members",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/automod links <policy>"
         },
         {
           "name": "automod setup",
           "cog": "Automod",
           "type": "slash",
           "description": "Run the animated AutoMod deployment wizard.",
-          "group": "automod"
+          "group": "automod",
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/automod setup"
         },
         {
           "name": "automod whitelist",
           "cog": "Automod",
           "type": "slash",
           "description": "Trust a user, role, or channel.",
-          "group": "automod"
+          "group": "automod",
+          "params": [
+            {
+              "name": "kind",
+              "description": "User, role, or channel",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "action",
+              "description": "Add or remove",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "user",
+              "description": "User",
+              "required": false,
+              "type": "user"
+            },
+            {
+              "name": "role",
+              "description": "Role",
+              "required": false,
+              "type": "role"
+            },
+            {
+              "name": "channel",
+              "description": "Channel",
+              "required": false,
+              "type": "channel"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/automod whitelist <kind> <action> [user] [role] [channel]"
         },
         {
           "name": "automod words",
           "cog": "Automod",
           "type": "slash",
           "description": "Manage blocked words and phrases.",
-          "group": "automod"
+          "group": "automod",
+          "params": [
+            {
+              "name": "action",
+              "description": "Add, remove, or list",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "words",
+              "description": "Comma-separated or one per line",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/automod words <action> [words]"
         }
       ]
     },
@@ -334,49 +856,159 @@
           "cog": "Apply",
           "type": "slash+prefix",
           "description": "Set or clear the channel where approval announcements are posted.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "channel",
+              "description": "Leave empty to turn off approval announcements.",
+              "required": false,
+              "type": "channel"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/apply_approval_channel [channel]"
         },
         {
           "name": "apply_panel",
           "cog": "Apply",
           "type": "slash+prefix",
           "description": "Post the Apply button panel in a channel.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "channel",
+              "description": "Where to post the Apply panel.",
+              "required": true,
+              "type": "channel"
+            },
+            {
+              "name": "title",
+              "description": "Optional custom title.",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "description",
+              "description": "Optional custom description.",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/apply_panel <channel> [title] [description]"
         },
         {
           "name": "apply_questions",
           "cog": "Apply",
           "type": "slash+prefix",
           "description": "Set the questions applicants are asked (up to 5).",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "question1",
+              "description": "First question (required).",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "question2",
+              "description": "Second question.",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "question3",
+              "description": "Third question.",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "question4",
+              "description": "Fourth question.",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "question5",
+              "description": "Fifth question.",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/apply_questions <question1> [question2] [question3] [question4] [question5]"
         },
         {
           "name": "apply_settings",
           "cog": "Apply",
           "type": "slash+prefix",
           "description": "View the current staff application configuration.",
-          "group": null
+          "group": null,
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/apply_settings"
         },
         {
           "name": "apply_setup",
           "cog": "Apply",
           "type": "slash+prefix",
           "description": "Configure the staff application system.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "review_channel",
+              "description": "Where new applications get posted for staff to review.",
+              "required": true,
+              "type": "channel"
+            },
+            {
+              "name": "grant_role",
+              "description": "The role automatically granted when an application is approved.",
+              "required": true,
+              "type": "role"
+            },
+            {
+              "name": "required_role",
+              "description": "Optional \u2014 a role members must already have to apply.",
+              "required": false,
+              "type": "role"
+            },
+            {
+              "name": "approval_channel",
+              "description": "Optional \u2014 where an announcement is posted when someone's approved.",
+              "required": false,
+              "type": "channel"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/apply_setup <review_channel> <grant_role> [required_role] [approval_channel]"
         },
         {
           "name": "apply_status",
           "cog": "Apply",
           "type": "slash+prefix",
           "description": "Check the status of your most recent staff application.",
-          "group": null
+          "group": null,
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/apply_status"
         },
         {
           "name": "apply_toggle",
           "cog": "Apply",
           "type": "slash+prefix",
           "description": "Open or close staff applications.",
-          "group": null
+          "group": null,
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/apply_toggle"
         }
       ]
     },
@@ -388,42 +1020,97 @@
           "cog": "Antinuke",
           "type": "group",
           "description": "Gogeta Anti-Nuke security control center",
-          "group": null
+          "group": null,
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/antinuke"
         },
         {
           "name": "antinuke-incidents",
           "cog": "Antinuke",
           "type": "slash+prefix",
           "description": "View Anti-Nuke incidents.",
-          "group": null
+          "group": null,
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/antinuke-incidents"
         },
         {
           "name": "antinuke config",
           "cog": "Antinuke",
           "type": "slash",
           "description": "Open the Anti-Nuke control center without running setup.",
-          "group": "antinuke"
+          "group": "antinuke",
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/antinuke config"
         },
         {
           "name": "antinuke disable",
           "cog": "Antinuke",
           "type": "slash",
           "description": "Disable the Anti-Nuke firewall.",
-          "group": "antinuke"
+          "group": "antinuke",
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/antinuke disable"
         },
         {
           "name": "antinuke setup",
           "cog": "Antinuke",
           "type": "slash",
           "description": "Run the animated Anti-Nuke deployment wizard.",
-          "group": "antinuke"
+          "group": "antinuke",
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/antinuke setup"
         },
         {
           "name": "antinuke whitelist",
           "cog": "Antinuke",
           "type": "slash",
           "description": "Manage Anti-Nuke trust exemptions.",
-          "group": "antinuke"
+          "group": "antinuke",
+          "params": [
+            {
+              "name": "kind",
+              "description": "User, role or bot",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "action",
+              "description": "Add or remove",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "user",
+              "description": "User target",
+              "required": false,
+              "type": "user"
+            },
+            {
+              "name": "role",
+              "description": "Role target",
+              "required": false,
+              "type": "role"
+            },
+            {
+              "name": "bot",
+              "description": "Bot target",
+              "required": false,
+              "type": "user"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/antinuke whitelist <kind> <action> [user] [role] [bot]"
         }
       ]
     },
@@ -435,42 +1122,93 @@
           "cog": "Giveaway",
           "type": "prefix",
           "description": "Manage giveaway bonus entry roles.",
-          "group": null
+          "group": null,
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "gbonusrole"
         },
         {
           "name": "greroll",
           "cog": "Giveaway",
           "type": "slash+prefix",
           "description": "Reroll a giveaway winner.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "message_id",
+              "description": "The giveaway's message ID.",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/greroll <message_id>"
         },
         {
           "name": "gstart",
           "cog": "Giveaway",
           "type": "prefix",
           "description": "",
-          "group": null
+          "group": null,
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "gstart"
         },
         {
           "name": "gbonusrole add",
           "cog": "Giveaway",
           "type": "slash",
           "description": "Give a role bonus giveaway entries.",
-          "group": "gbonusrole"
+          "group": "gbonusrole",
+          "params": [
+            {
+              "name": "role",
+              "description": "\u2026",
+              "required": true,
+              "type": "role"
+            },
+            {
+              "name": "entries",
+              "description": "\u2026",
+              "required": true,
+              "type": "integer"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/gbonusrole add <role> <entries>"
         },
         {
           "name": "gbonusrole list",
           "cog": "Giveaway",
           "type": "slash",
           "description": "View all giveaway bonus roles.",
-          "group": "gbonusrole"
+          "group": "gbonusrole",
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/gbonusrole list"
         },
         {
           "name": "gbonusrole remove",
           "cog": "Giveaway",
           "type": "slash",
           "description": "Remove a giveaway bonus role.",
-          "group": "gbonusrole"
+          "group": "gbonusrole",
+          "params": [
+            {
+              "name": "role",
+              "description": "\u2026",
+              "required": true,
+              "type": "role"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/gbonusrole remove <role>"
         }
       ]
     },
@@ -482,35 +1220,80 @@
           "cog": "Antibetray",
           "type": "group",
           "description": "Gogeta privileged-identity monitor",
-          "group": null
+          "group": null,
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/antibetray"
         },
         {
           "name": "antibetray-incidents",
           "cog": "Antibetray",
           "type": "slash+prefix",
           "description": "View recent Anti-Betray incidents.",
-          "group": null
+          "group": null,
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/antibetray-incidents"
         },
         {
           "name": "antibetray config",
           "cog": "Antibetray",
           "type": "slash",
           "description": "Open the Anti-Betray control center.",
-          "group": "antibetray"
+          "group": "antibetray",
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/antibetray config"
         },
         {
           "name": "antibetray setup",
           "cog": "Antibetray",
           "type": "slash",
           "description": "Run Anti-Betray preflight and deploy the trust guard.",
-          "group": "antibetray"
+          "group": "antibetray",
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/antibetray setup"
         },
         {
           "name": "antibetray whitelist",
           "cog": "Antibetray",
           "type": "slash",
           "description": "Add or remove an explicitly watched user or role.",
-          "group": "antibetray"
+          "group": "antibetray",
+          "params": [
+            {
+              "name": "kind",
+              "description": "Target type",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "action",
+              "description": "Add or remove",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "user",
+              "description": "User target",
+              "required": false,
+              "type": "user"
+            },
+            {
+              "name": "role",
+              "description": "Role target",
+              "required": false,
+              "type": "role"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/antibetray whitelist <kind> <action> [user] [role]"
         }
       ]
     },
@@ -522,35 +1305,93 @@
           "cog": "Tickets",
           "type": "slash+prefix",
           "description": "Close the current ticket.",
-          "group": null
+          "group": null,
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/close"
         },
         {
           "name": "ticket",
           "cog": "Tickets",
           "type": "prefix",
           "description": "Configure and deploy the ticket system.",
-          "group": null
+          "group": null,
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "ticket"
         },
         {
           "name": "ticket panel",
           "cog": "Tickets",
           "type": "slash",
           "description": "Post the 3-button ticket panel (Support / Reward / Staff Application) in a channel.",
-          "group": "ticket"
+          "group": "ticket",
+          "params": [
+            {
+              "name": "channel",
+              "description": "Where to post the ticket panel.",
+              "required": true,
+              "type": "channel"
+            },
+            {
+              "name": "title",
+              "description": "Optional custom title.",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "description",
+              "description": "Optional custom description.",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/ticket panel <channel> [title] [description]"
         },
         {
           "name": "ticket settings",
           "cog": "Tickets",
           "type": "slash",
           "description": "View the current ticket configuration.",
-          "group": "ticket"
+          "group": "ticket",
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/ticket settings"
         },
         {
           "name": "ticket setup",
           "cog": "Tickets",
           "type": "slash",
           "description": "Configure the category and staff role for one ticket type.",
-          "group": "ticket"
+          "group": "ticket",
+          "params": [
+            {
+              "name": "type",
+              "description": "Which ticket type to configure.",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "category",
+              "description": "Where new tickets of this type are created.",
+              "required": true,
+              "type": "channel"
+            },
+            {
+              "name": "staff_role",
+              "description": "Role that can see tickets of this type, besides the opener.",
+              "required": true,
+              "type": "role"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/ticket setup <type> <category> <staff_role>"
         }
       ]
     },
@@ -562,28 +1403,44 @@
           "cog": "EmojiVault",
           "type": "prefix",
           "description": "Configure the server that receives copied-in emoji.",
-          "group": null
+          "group": null,
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "emojivault"
         },
         {
           "name": "emojivault clear",
           "cog": "EmojiVault",
           "type": "slash",
           "description": "Unset the emoji vault (must be run in the current vault server).",
-          "group": "emojivault"
+          "group": "emojivault",
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/emojivault clear"
         },
         {
           "name": "emojivault set",
           "cog": "EmojiVault",
           "type": "slash",
           "description": "Make this server the emoji vault target.",
-          "group": "emojivault"
+          "group": "emojivault",
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/emojivault set"
         },
         {
           "name": "emojivault status",
           "cog": "EmojiVault",
           "type": "slash",
           "description": "Configure the server that receives copied-in emoji.",
-          "group": "emojivault"
+          "group": "emojivault",
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/emojivault status"
         }
       ]
     },
@@ -595,21 +1452,33 @@
           "cog": "SecurityDashboard",
           "type": "slash+prefix",
           "description": "Open Gogeta's premium Discord security command center.",
-          "group": null
+          "group": null,
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/security-center"
         },
         {
           "name": "security-check",
           "cog": "SecurityDashboard",
           "type": "slash+prefix",
           "description": "Run a permissions and hierarchy diagnostic.",
-          "group": null
+          "group": null,
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/security-check"
         },
         {
           "name": "security-status",
           "cog": "SecurityDashboard",
           "type": "slash+prefix",
           "description": "Show a compact live security status.",
-          "group": null
+          "group": null,
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/security-status"
         }
       ]
     },
@@ -621,21 +1490,40 @@
           "cog": "ServerLogs",
           "type": "slash",
           "description": "Set one channel for comprehensive premium server logging",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "channel",
+              "description": "Channel where all server logs will be sent",
+              "required": true,
+              "type": "channel"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/log <channel>"
         },
         {
           "name": "logoff",
           "cog": "ServerLogs",
           "type": "slash",
           "description": "Disable centralized server logging",
-          "group": null
+          "group": null,
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/logoff"
         },
         {
           "name": "logstatus",
           "cog": "ServerLogs",
           "type": "slash",
           "description": "View the current logging status",
-          "group": null
+          "group": null,
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/logstatus"
         }
       ]
     },
@@ -647,14 +1535,29 @@
           "cog": "AutoRole",
           "type": "slash+prefix",
           "description": "Set, view, or disable the role automatically given to new members.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "role",
+              "description": "Role to automatically give new human members. Leave empty to view the current setting.",
+              "required": false,
+              "type": "role"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/autorole [role]"
         },
         {
           "name": "autorole_off",
           "cog": "AutoRole",
           "type": "slash+prefix",
           "description": "Disable automatic role assignment for new members.",
-          "group": null
+          "group": null,
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/autorole_off"
         }
       ]
     },
@@ -666,7 +1569,18 @@
           "cog": "DMAnnounce",
           "type": "slash+prefix",
           "description": "Send a confirmed announcement by DM to members of this server.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "message",
+              "description": "The announcement to send to this server's members.",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/dmannounce <message>"
         }
       ]
     },
@@ -678,7 +1592,11 @@
           "cog": "EmbedBuilder",
           "type": "slash+prefix",
           "description": "Build and send a custom embed with an interactive panel.",
-          "group": null
+          "group": null,
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/embed"
         }
       ]
     },
@@ -690,7 +1608,18 @@
           "cog": "GhostPing",
           "type": "slash+prefix",
           "description": "Ghost-ping new members into the channels you pick. Leave empty to see the current list.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "channels",
+              "description": "Several channels at once, e.g. #rules #info #roles (or 'off' to stop)",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/ghostping [channels]"
         }
       ]
     },
@@ -702,7 +1631,18 @@
           "cog": "GogetasPet",
           "type": "slash+prefix",
           "description": "Talk to Gogeta's Pet.",
-          "group": null
+          "group": null,
+          "params": [
+            {
+              "name": "message",
+              "description": "What do you want to say to Gogeta's Pet?",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/ai <message>"
         }
       ]
     },
@@ -714,7 +1654,11 @@
           "cog": "Help",
           "type": "slash+prefix",
           "description": "List every command Gogeta offers, grouped by category.",
-          "group": null
+          "group": null,
+          "params": [],
+          "permissions": [],
+          "aliases": [],
+          "usage": "/help"
         }
       ]
     }

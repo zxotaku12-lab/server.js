@@ -1,0 +1,66 @@
+name: Sync slash commands
+
+# Manual only — ye workflow kabhi push pe apne aap nahi chalta, taaki token
+# sirf tab use ho jab tum khud commands register karna chaho.
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: "guild = instant (test server) · global = sab servers (~1 ghanta)"
+        type: choice
+        options: [guild, global]
+        default: guild
+      clear:
+        description: "Commands register karne ke bajaye hata do"
+        type: boolean
+        default: false
+
+jobs:
+  sync:
+    name: Register commands (${{ inputs.scope }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    defaults:
+      run:
+        working-directory: python-bot
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: python-bot/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Check required secrets
+        env:
+          TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          GUILD_ID: ${{ secrets.DISCORD_GUILD_ID }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::error::DISCORD_TOKEN secret missing — Repo → Settings → Secrets and variables → Actions me add karo."
+            exit 1
+          fi
+          if [ "${{ inputs.scope }}" = "guild" ] && [ -z "$GUILD_ID" ]; then
+            echo "::error::DISCORD_GUILD_ID secret missing (scope=guild ke liye zaroori)."
+            exit 1
+          fi
+
+      - name: Sync commands
+        env:
+          TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          DISCORD_GUILD_ID: ${{ secrets.DISCORD_GUILD_ID }}
+        run: |
+          FLAGS=""
+          if [ "${{ inputs.clear }}" = "true" ]; then FLAGS="--clear"; fi
+
+          if [ "${{ inputs.scope }}" = "guild" ]; then
+            python scripts/sync_commands.py --guild "$DISCORD_GUILD_ID" $FLAGS
+          else
+            python scripts/sync_commands.py $FLAGS
+          fi

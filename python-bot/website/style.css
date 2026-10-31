@@ -320,3 +320,90 @@ pre code { color: #cfe6ff; font-size: 0.84rem; line-height: 1.7; }
   * { transition: none !important; animation: none !important; }
   html { scroll-behavior: auto; }
 }
+
+/* ── theme toggle ────────────────────────────────────────── */
+.btn-icon { padding: 0.55rem 0.7rem; border-radius: 10px; }
+.theme-icon { font-size: 1rem; line-height: 1; }
+
+/* ── light theme ─────────────────────────────────────────── */
+html[data-theme="light"] {
+  --bg: #f6f6fb;
+  --bg-2: #ffffff;
+  --panel: #ffffff;
+  --panel-2: #f1f1f8;
+  --line: #dedeea;
+  --line-soft: #e8e8f1;
+  --text: #14141d;
+  --muted: #5b5b72;
+  --violet: #6d4fe0;
+  --violet-dim: #5b3fd0;
+  --cyan: #0b7fbe;
+  --green: #128a4b;
+  --amber: #a86a08;
+  --red: #c03434;
+}
+html[data-theme="light"] body { background: var(--bg); }
+html[data-theme="light"] .nav { background: rgba(255, 255, 255, 0.82); }
+html[data-theme="light"] .hero-glow {
+  background:
+    radial-gradient(46% 46% at 22% 30%, rgba(151, 117, 255, 0.20), transparent 70%),
+    radial-gradient(40% 40% at 78% 18%, rgba(11, 127, 190, 0.10), transparent 70%);
+}
+html[data-theme="light"] pre,
+html[data-theme="light"] .invite-preview code { background: #f4f4fa; }
+html[data-theme="light"] pre code { color: #23324a; }
+html[data-theme="light"] .cmd-name { color: #4a2fb0; }
+html[data-theme="light"] .cmd-sub .cmd-name { color: #5b3fd0; }
+html[data-theme="light"] .btn-primary { color: #ffffff; }
+html[data-theme="light"] .brand-mark { color: #ffffff; }
+html[data-theme="light"] .toast { box-shadow: 0 18px 40px -24px rgba(20, 20, 40, 0.5); }
+html[data-theme="light"] .danger { color: #7d1f1f; background: rgba(192, 52, 52, 0.07); }
+html[data-theme="light"] .chip.is-active { color: #4a2fb0; background: rgba(109, 79, 224, 0.12); }
+html[data-theme="light"] .cog-list button.is-active { color: #4a2fb0; }
+
+/* ── command detail modal ────────────────────────────────── */
+.cmd-modal {
+  border: 1px solid var(--line); border-radius: 18px;
+  background: var(--panel); color: var(--text);
+  padding: 0; width: min(640px, calc(100vw - 2rem));
+  max-height: min(86vh, 720px); overflow: auto;
+  box-shadow: 0 40px 80px -40px #000;
+}
+.cmd-modal::backdrop { background: rgba(4, 4, 10, 0.68); backdrop-filter: blur(3px); }
+.cmd-modal-inner { padding: 1.25rem 1.35rem 1.1rem; }
+.cmd-modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.cmd-modal-cog {
+  margin: 0 0 0.2rem; font-size: 0.72rem; text-transform: uppercase;
+  letter-spacing: 0.11em; color: var(--muted);
+}
+.cmd-modal-head h3 { margin: 0; font-size: 1.15rem; }
+.cmd-modal-head code { font-size: 1.05rem; color: #e6ddff; }
+html[data-theme="light"] .cmd-modal-head code { color: #4a2fb0; }
+.cmd-modal-badges { display: flex; gap: 0.4rem; flex-wrap: wrap; margin: 0.7rem 0 0.5rem; }
+.cmd-modal-desc { margin: 0 0 1rem; color: var(--muted); font-size: 0.92rem; }
+.cmd-modal-section { margin-bottom: 1rem; }
+.cmd-modal-section h4 {
+  margin: 0 0 0.4rem; font-size: 0.72rem; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--muted);
+}
+.usage-row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.usage-row code {
+  background: var(--bg); border: 1px solid var(--line-soft);
+  border-radius: 9px; padding: 0.4rem 0.65rem; font-size: 0.86rem;
+}
+.param-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+.param-table th, .param-table td {
+  text-align: left; padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--line-soft);
+  vertical-align: top;
+}
+.param-table th { color: var(--muted); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.07em; }
+.param-table td:first-child { font-family: var(--mono); color: var(--cyan); white-space: nowrap; }
+.param-table td:nth-child(2), .param-table td:nth-child(3) { color: var(--muted); white-space: nowrap; }
+.cmd-modal-foot { border-top: 1px solid var(--line-soft); padding-top: 0.7rem; }
+.cmd-modal-foot .note { margin: 0; font-size: 0.76rem; }
+.cmd-modal-foot code { color: var(--muted); }
+.cmd:hover { cursor: pointer; }
+
+/* usage hint inside a command row */
+.cmd-usage { color: #7d7d99; font-family: var(--mono); font-size: 0.8rem; }
+html[data-theme="light"] .cmd-usage { color: #6b6b85; }

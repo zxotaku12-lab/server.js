@@ -83,6 +83,20 @@ Script wahi rule use karta hai jo `bot.py` use karta hai (sirf `setup()` wali fi
 
 > Note: global aur guild scope alag hote hain. Guild me sync karne se sirf usi server me commands dikhengi; global sync sab jagah jaata hai (thoda late).
 
+### GitHub Actions se sync (optional)
+
+Bot ko host karne ke bajaye commands CI se register karne hain to:
+
+```bash
+# value prompt me paste hoti hai — chat/shell history me nahi jaati
+gh secret set DISCORD_TOKEN
+gh secret set DISCORD_GUILD_ID
+```
+
+Phir **Actions → “Sync slash commands” → Run workflow** (guild ya global chuno). Workflow manual-only hai (`workflow_dispatch`), kisi push pe apne aap nahi chalta, aur token ko kabhi print nahi karta.
+
+⚠️ Secret me wo token daalo jo **naya** ho. Chat/issue me share ho chuka token reset karwao: Developer Portal → Application → Bot → *Reset Token*.
+
 ---
 
 ## Website (static docs + command explorer)
