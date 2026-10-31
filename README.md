@@ -188,7 +188,24 @@ scripts/selfcheck.js   integration test harness (HTTP + signatures)
 scripts/mod.test.js    moderation unit tests (mock guild)
 scripts/settings.test.js  settings unit tests (HTTP permission strings, cache coherence)
 scripts/level.test.js  leveling + XP maths tests
+
+python-bot/            ALAG project: Gogeta's Pet (discord.py) — is Node bot se independent
 ```
+
+## Python bot (Gogeta's Pet)
+
+`python-bot/` me ek **alag** project hai — `discord.py` v2 wala Gogeta's Pet bot (moderation, AutoMod, Anti-Nuke/Anti-Betray, tickets, giveaways, applications, invites, logs, embed builder, AI router). Ye is Node bot se koi file share nahi karta aur iske bina bhi independently chalta hai.
+
+```bash
+cd python-bot
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env          # TOKEN + GOGETAS_PET_OWNER_ID bharo
+python check_deploy.py        # preflight
+python bot.py
+```
+
+Tests: `python -m pytest -q` (60 tests) aur `python tests/smoke_cogs.py` (saare cogs offline load). Poora detail, structure aur env table `python-bot/README.md` me hai; command list `python-bot/COMMANDS.md`.
 
 ### Naya command kaise add karein
 

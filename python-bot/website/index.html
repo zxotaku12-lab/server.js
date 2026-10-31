@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gogeta's Pet — commands, setup &amp; security</title>
+<meta name="description" content="Gogeta's Pet — all-in-one Discord bot: moderation, AutoMod, Anti-Nuke, tickets, giveaways, applications, invites and logs. Browse every command." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%239775ff'/%3E%3Ctext x='50' y='68' font-size='58' font-family='system-ui' font-weight='700' text-anchor='middle' fill='%230b0b12'%3EG%3C/text%3E%3C/svg%3E" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<a class="skip" href="#commands">Skip to commands</a>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top">
+      <span class="brand-mark">G</span>
+      <span>
+        <strong>Gogeta's Pet</strong>
+        <small>all-in-one discord bot</small>
+      </span>
+    </a>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#commands">Commands</a>
+      <a href="#setup">Setup</a>
+      <a href="#connect">Connect</a>
+      <button class="btn btn-icon" id="theme-toggle" type="button" aria-label="Toggle theme" title="Light / dark">
+        <span class="theme-icon" aria-hidden="true">◐</span>
+      </button>
+      <a class="btn btn-ghost" href="https://github.com/zxotaku12-lab/server.js" target="_blank" rel="noreferrer">GitHub ↗</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ── hero ─────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="wrap hero-inner">
+      <p class="eyebrow"><span class="dot"></span> discord.py v2 · slash + prefix · sqlite</p>
+      <h1>Ek bot. Poora server <span class="grad">control</span>.</h1>
+      <p class="lede">
+        Moderation, AutoMod, Anti-Nuke, Anti-Betray, tickets with AI support,
+        giveaways, applications, invite tracking, logs, emoji vault aur embed builder —
+        sab ek hi bot me, ek hi dashboard se configure hone wale commands ke saath.
+      </p>
+      <div class="cta">
+        <a class="btn btn-primary" href="#commands">Browse <span id="cta-command-count">commands</span></a>
+        <a class="btn btn-ghost" href="#setup">Setup guide</a>
+      </div>
+
+      <dl class="stats" id="stats">
+        <div><dt>Commands</dt><dd id="stat-commands">—</dd></div>
+        <div><dt>Cogs</dt><dd id="stat-cogs">—</dd></div>
+        <div><dt>Slash (incl. subs)</dt><dd id="stat-slash">—</dd></div>
+        <div><dt>Tests passing</dt><dd>60</dd></div>
+      </dl>
+      <p class="generated" id="generated"></p>
+    </div>
+  </section>
+
+  <!-- ── features ─────────────────────────────────────────── -->
+  <section id="features" class="section">
+    <div class="wrap">
+      <h2 class="section-title">Kya kya milta hai</h2>
+      <p class="section-sub">Har system alag cog hai — on/off, configure aur audit sab commands se.</p>
+
+      <div class="grid cards">
+        <article class="card">
+          <div class="card-icon" style="--i:#9775ff">🛡️</div>
+          <h3>Moderation</h3>
+          <p>ban, kick, timeout, softban, purge, warn + warning history, lock/unlock, slowmode, nickname, roles, modlogs.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon" style="--i:#8ad8ff">🤖</div>
+          <h3>AutoMod</h3>
+          <p>Spam, duplicate, mention, caps aur invite/link detection. Per-rule thresholds, whitelists, escalation aur incident log.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon" style="--i:#f87171">💣</div>
+          <h3>Anti-Nuke &amp; Anti-Betray</h3>
+          <p>Mass-delete/role/channel abuse pe instant action, privileged identity monitoring, whitelist aur incident trail.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon" style="--i:#4ade80">🎫</div>
+          <h3>Tickets + TicketAI</h3>
+          <p>Panel, categories, transcripts aur AI support jo server knowledge se answer deta hai — human escalation ke saath.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon" style="--i:#fbbf24">🎉</div>
+          <h3>Giveaways &amp; Apply</h3>
+          <p>Requirements, bonus-role entries, reroll; staff applications with questions, approval channel aur status tracking.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon" style="--i:#c084fc">📨</div>
+          <h3>Invites &amp; Logs</h3>
+          <p>Invite tracking with fake-age filter, leaderboard aur rendered check card; centralized server logs ek hi command se.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── commands ─────────────────────────────────────────── -->
+  <section id="commands" class="section section-alt">
+    <div class="wrap">
+      <h2 class="section-title">Command explorer</h2>
+      <p class="section-sub">
+        Ye list bot ke asli registered commands se generate hoti hai (<code>scripts/gen_site_data.py</code>),
+        hand-written nahi. Type karke search karo, ya cog se filter karo.
+      </p>
+
+      <div class="explorer">
+        <aside class="sidebar">
+          <label class="search">
+            <span aria-hidden="true">⌕</span>
+            <input id="search" type="search" placeholder="Command dhoondo…  (press /)" autocomplete="off" />
+            <kbd>/</kbd>
+          </label>
+
+          <div class="filter-row" id="type-filters" role="group" aria-label="Command type">
+            <button class="chip is-active" data-type="all">All</button>
+            <button class="chip" data-type="slash">Slash</button>
+            <button class="chip" data-type="slash+prefix">Hybrid</button>
+            <button class="chip" data-type="group">Groups</button>
+          </div>
+
+          <h3 class="sidebar-title">Cogs</h3>
+          <ul class="cog-list" id="cog-list"></ul>
+        </aside>
+
+        <div class="results">
+          <div class="results-head">
+            <p id="result-count">Loading…</p>
+            <button class="btn btn-tiny" id="reset">Reset filters</button>
+          </div>
+          <div id="command-list" class="command-list" aria-live="polite"></div>
+          <p class="empty" id="empty" hidden>Kuch nahi mila — search clear karke dekho.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── setup ────────────────────────────────────────────── -->
+  <section id="setup" class="section">
+    <div class="wrap narrow">
+      <h2 class="section-title">Setup — 4 steps</h2>
+      <p class="section-sub">Python 3.11+ chahiye. Har command copy kar sakte ho.</p>
+
+      <ol class="steps">
+        <li>
+          <h3>Clone &amp; install</h3>
+          <pre><code>cd python-bot
+python3 -m venv .venv &amp;&amp; source .venv/bin/activate
+pip install -r requirements.txt</code></pre>
+        </li>
+        <li>
+          <h3>Config bharo</h3>
+          <pre><code>cp .env.example .env
+# TOKEN=...            (Developer Portal → Bot → Reset Token)
+# GOGETAS_PET_OWNER_ID=...   (apna user ID)
+# DISCORD_GUILD_ID=...       (test server ID, optional)</code></pre>
+          <p class="note">⚠️ <code>.env</code> gitignored hai. Token kabhi commit/chat me nahi.</p>
+        </li>
+        <li>
+          <h3>Preflight</h3>
+          <pre><code>python check_deploy.py   # token + files verify, secrets print nahi karta</code></pre>
+        </li>
+        <li>
+          <h3>Commands register karo &amp; bot chalao</h3>
+          <pre><code>python scripts/sync_commands.py --guild $DISCORD_GUILD_ID   # instant
+python bot.py                                               # startup pe khud sync</code></pre>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ── connect ──────────────────────────────────────────── -->
+  <section id="connect" class="section section-alt">
+    <div class="wrap narrow">
+      <h2 class="section-title">Bot ko apne server se connect karo</h2>
+      <p class="section-sub">
+        Client ID se invite link banao. Ye values <strong>sirf isi browser</strong> me (localStorage) save hoti hain —
+        kahin bheji ya upload nahi jaati.
+      </p>
+
+      <form class="connect-form" id="connect-form" autocomplete="off">
+        <label>
+          <span>Client ID <em>(Application ID — public)</em></span>
+          <input id="client-id" inputmode="numeric" placeholder="123456789012345678" pattern="[0-9]{15,25}" />
+        </label>
+        <label>
+          <span>Guild ID <em>(optional — instant command sync)</em></span>
+          <input id="guild-id" inputmode="numeric" placeholder="987654321098765432" pattern="[0-9]{15,25}" />
+        </label>
+        <div class="connect-actions">
+          <button class="btn btn-primary" type="submit">Invite link banao</button>
+          <button class="btn btn-ghost" type="button" id="connect-reset">Clear</button>
+        </div>
+      </form>
+
+      <div class="invite-preview" id="invite-preview" hidden>
+        <p class="label">Invite URL</p>
+        <code id="invite-url"></code>
+        <div class="connect-actions">
+          <button class="btn btn-tiny" id="copy-invite">Copy link</button>
+          <a class="btn btn-tiny" id="open-invite" href="#" target="_blank" rel="noreferrer">Open ↗</a>
+        </div>
+        <p class="note" id="invite-note"></p>
+      </div>
+
+      <p class="danger">
+        🚫 <strong>Token yahan kabhi na daalo.</strong> Website static hai — token sirf <code>.env</code> me,
+        server pe. Jo token chat me share ho chuka hai use Developer Portal se <em>Reset Token</em> karke naya banao.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <p><strong>Gogeta's Pet</strong> — credits <span class="mono">gogeta_gg</span></p>
+    <p class="mono small">
+      static site · <a href="https://github.com/zxotaku12-lab/server.js" target="_blank" rel="noreferrer">repo</a> ·
+      data: <span id="footer-generated">commands.json</span>
+    </p>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<dialog class="cmd-modal" id="cmd-modal" aria-labelledby="cmd-modal-title">
+  <div class="cmd-modal-inner">
+    <header class="cmd-modal-head">
+      <div>
+        <p class="cmd-modal-cog" id="cmd-modal-cog"></p>
+        <h3 id="cmd-modal-title"><code id="cmd-modal-name"></code></h3>
+      </div>
+      <button class="copy close" type="button" id="cmd-modal-close" aria-label="Close">✕</button>
+    </header>
+
+    <div class="cmd-modal-badges" id="cmd-modal-badges"></div>
+    <p class="cmd-modal-desc" id="cmd-modal-desc"></p>
+
+    <section class="cmd-modal-section">
+      <h4>Usage</h4>
+      <div class="usage-row">
+        <code id="cmd-modal-usage"></code>
+        <button class="btn btn-tiny" type="button" id="cmd-modal-copy">Copy</button>
+      </div>
+    </section>
+
+    <section class="cmd-modal-section" id="cmd-modal-params-wrap" hidden>
+      <h4>Parameters</h4>
+      <table class="param-table">
+        <thead><tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+        <tbody id="cmd-modal-params"></tbody>
+      </table>
+    </section>
+
+    <section class="cmd-modal-section" id="cmd-modal-aliases-wrap" hidden>
+      <h4>Aliases</h4>
+      <p id="cmd-modal-aliases" class="mono"></p>
+    </section>
+
+    <section class="cmd-modal-section" id="cmd-modal-perms-wrap" hidden>
+      <h4>Default permissions</h4>
+      <p id="cmd-modal-perms" class="mono"></p>
+    </section>
+
+    <footer class="cmd-modal-foot">
+      <span class="note">Deep link: <code id="cmd-modal-link"></code></span>
+    </footer>
+  </div>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>

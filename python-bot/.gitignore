@@ -1,0 +1,18 @@
+# Python caches / virtualenv
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Secrets
+.env
+
+# Runtime state (created on first start)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+.activity_flags_reset_done
+
+# Per-guild knowledge files are operator data, not source
+knowledge/servers/*.md
