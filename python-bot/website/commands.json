@@ -1,0 +1,722 @@
+{
+  "generated_at": "2026-10-31 06:37 UTC",
+  "totals": {
+    "cogs_loaded": 20,
+    "cogs_failed": 0,
+    "slash_top_level": 56,
+    "slash_all": 89,
+    "prefix": 57,
+    "unique_commands": 89
+  },
+  "failed": [],
+  "cogs": [
+    {
+      "name": "Moderation",
+      "commands": [
+        {
+          "name": "addrole",
+          "cog": "Moderation",
+          "type": "slash+prefix",
+          "description": "Add a role to a member.",
+          "group": null
+        },
+        {
+          "name": "ban",
+          "cog": "Moderation",
+          "type": "slash+prefix",
+          "description": "Ban a member from the server.",
+          "group": null
+        },
+        {
+          "name": "clearwarnings",
+          "cog": "Moderation",
+          "type": "slash+prefix",
+          "description": "Clear all warnings for a member.",
+          "group": null
+        },
+        {
+          "name": "delwarn",
+          "cog": "Moderation",
+          "type": "slash+prefix",
+          "description": "Remove a single warning by its ID.",
+          "group": null
+        },
+        {
+          "name": "kick",
+          "cog": "Moderation",
+          "type": "slash+prefix",
+          "description": "Kick a member from the server.",
+          "group": null
+        },
+        {
+          "name": "lock",
+          "cog": "Moderation",
+          "type": "slash+prefix",
+          "description": "Lock a channel for everyone at or below your configured cutoff role \u2014 including Administrators.",
+          "group": null
+        },
+        {
+          "name": "lockconfig",
+          "cog": "Moderation",
+          "type": "prefix",
+          "description": "Configure the hierarchy cutoff used by /lock.",
+          "group": null
+        },
+        {
+          "name": "modlogs",
+          "cog": "Moderation",
+          "type": "slash+prefix",
+          "description": "View a member's recent moderation history.",
+          "group": null
+        },
+        {
+          "name": "nickname",
+          "cog": "Moderation",
+          "type": "slash+prefix",
+          "description": "Change a member's nickname.",
+          "group": null
+        },
+        {
+          "name": "prefix",
+          "cog": "Moderation",
+          "type": "slash+prefix",
+          "description": "View or change this server's command prefix.",
+          "group": null
+        },
+        {
+          "name": "purge",
+          "cog": "Moderation",
+          "type": "slash+prefix",
+          "description": "Bulk delete messages in this channel.",
+          "group": null
+        },
+        {
+          "name": "removerole",
+          "cog": "Moderation",
+          "type": "slash+prefix",
+          "description": "Remove a role from a member.",
+          "group": null
+        },
+        {
+          "name": "roleall",
+          "cog": "Moderation",
+          "type": "slash+prefix",
+          "description": "Give a role to every member who has another specific role.",
+          "group": null
+        },
+        {
+          "name": "rolerall",
+          "cog": "Moderation",
+          "type": "slash+prefix",
+          "description": "Remove a role from every member in the server.",
+          "group": null
+        },
+        {
+          "name": "slowmode",
+          "cog": "Moderation",
+          "type": "slash+prefix",
+          "description": "Set this channel's slowmode delay.",
+          "group": null
+        },
+        {
+          "name": "softban",
+          "cog": "Moderation",
+          "type": "slash+prefix",
+          "description": "Ban then immediately unban a member, purging their recent messages.",
+          "group": null
+        },
+        {
+          "name": "timeout",
+          "cog": "Moderation",
+          "type": "slash+prefix",
+          "description": "Timeout (mute) a member for a duration.",
+          "group": null
+        },
+        {
+          "name": "unban",
+          "cog": "Moderation",
+          "type": "slash+prefix",
+          "description": "Unban a user by their ID.",
+          "group": null
+        },
+        {
+          "name": "unlock",
+          "cog": "Moderation",
+          "type": "slash+prefix",
+          "description": "Unlock this (or a given) channel, restoring exactly what /lock changed.",
+          "group": null
+        },
+        {
+          "name": "untimeout",
+          "cog": "Moderation",
+          "type": "slash+prefix",
+          "description": "Remove a member's timeout.",
+          "group": null
+        },
+        {
+          "name": "warn",
+          "cog": "Moderation",
+          "type": "slash+prefix",
+          "description": "Warn a member.",
+          "group": null
+        },
+        {
+          "name": "warnings",
+          "cog": "Moderation",
+          "type": "slash+prefix",
+          "description": "View a member's warnings.",
+          "group": null
+        },
+        {
+          "name": "lockconfig set-role",
+          "cog": "Moderation",
+          "type": "slash",
+          "description": "Set the role that /lock uses as its cutoff.",
+          "group": "lockconfig"
+        },
+        {
+          "name": "lockconfig status",
+          "cog": "Moderation",
+          "type": "slash",
+          "description": "Configure the hierarchy cutoff used by /lock.",
+          "group": "lockconfig"
+        }
+      ]
+    },
+    {
+      "name": "InviteTracker",
+      "commands": [
+        {
+          "name": "invites",
+          "cog": "InviteTracker",
+          "type": "group",
+          "description": "Check invite stats.",
+          "group": null
+        },
+        {
+          "name": "invites-config",
+          "cog": "InviteTracker",
+          "type": "group",
+          "description": "Configure invite tracking.",
+          "group": null
+        },
+        {
+          "name": "invites check",
+          "cog": "InviteTracker",
+          "type": "slash",
+          "description": "Show a member's invite stats.",
+          "group": "invites"
+        },
+        {
+          "name": "invites leaderboard",
+          "cog": "InviteTracker",
+          "type": "slash",
+          "description": "Show the top inviters in this server.",
+          "group": "invites"
+        },
+        {
+          "name": "invites-config add",
+          "cog": "InviteTracker",
+          "type": "slash",
+          "description": "Manually grant bonus invites to a member.",
+          "group": "invites-config"
+        },
+        {
+          "name": "invites-config disable",
+          "cog": "InviteTracker",
+          "type": "slash",
+          "description": "Disable invite tracking for this server.",
+          "group": "invites-config"
+        },
+        {
+          "name": "invites-config enable",
+          "cog": "InviteTracker",
+          "type": "slash",
+          "description": "Enable invite tracking for this server.",
+          "group": "invites-config"
+        },
+        {
+          "name": "invites-config fake-age",
+          "cog": "InviteTracker",
+          "type": "slash",
+          "description": "Set how new (in days) an account must be to get flagged as fake.",
+          "group": "invites-config"
+        },
+        {
+          "name": "invites-config logchannel",
+          "cog": "InviteTracker",
+          "type": "slash",
+          "description": "Set the channel invite tracking posts join/leave logs to.",
+          "group": "invites-config"
+        },
+        {
+          "name": "invites-config remove",
+          "cog": "InviteTracker",
+          "type": "slash",
+          "description": "Remove bonus invites from a member.",
+          "group": "invites-config"
+        },
+        {
+          "name": "invites-config reset",
+          "cog": "InviteTracker",
+          "type": "slash",
+          "description": "Wipe a member's invite stats.",
+          "group": "invites-config"
+        }
+      ]
+    },
+    {
+      "name": "Automod",
+      "commands": [
+        {
+          "name": "automod",
+          "cog": "Automod",
+          "type": "group",
+          "description": "Gogeta AutoMod control center",
+          "group": null
+        },
+        {
+          "name": "automod-incidents",
+          "cog": "Automod",
+          "type": "slash+prefix",
+          "description": "View recent AutoMod incidents.",
+          "group": null
+        },
+        {
+          "name": "automod config",
+          "cog": "Automod",
+          "type": "slash",
+          "description": "Open the AutoMod control center without running setup.",
+          "group": "automod"
+        },
+        {
+          "name": "automod disable",
+          "cog": "Automod",
+          "type": "slash",
+          "description": "Disable AutoMod.",
+          "group": "automod"
+        },
+        {
+          "name": "automod links",
+          "cog": "Automod",
+          "type": "slash",
+          "description": "Set the link policy: block every link, only configured classes, or allow all.",
+          "group": "automod"
+        },
+        {
+          "name": "automod setup",
+          "cog": "Automod",
+          "type": "slash",
+          "description": "Run the animated AutoMod deployment wizard.",
+          "group": "automod"
+        },
+        {
+          "name": "automod whitelist",
+          "cog": "Automod",
+          "type": "slash",
+          "description": "Trust a user, role, or channel.",
+          "group": "automod"
+        },
+        {
+          "name": "automod words",
+          "cog": "Automod",
+          "type": "slash",
+          "description": "Manage blocked words and phrases.",
+          "group": "automod"
+        }
+      ]
+    },
+    {
+      "name": "Apply",
+      "commands": [
+        {
+          "name": "apply_approval_channel",
+          "cog": "Apply",
+          "type": "slash+prefix",
+          "description": "Set or clear the channel where approval announcements are posted.",
+          "group": null
+        },
+        {
+          "name": "apply_panel",
+          "cog": "Apply",
+          "type": "slash+prefix",
+          "description": "Post the Apply button panel in a channel.",
+          "group": null
+        },
+        {
+          "name": "apply_questions",
+          "cog": "Apply",
+          "type": "slash+prefix",
+          "description": "Set the questions applicants are asked (up to 5).",
+          "group": null
+        },
+        {
+          "name": "apply_settings",
+          "cog": "Apply",
+          "type": "slash+prefix",
+          "description": "View the current staff application configuration.",
+          "group": null
+        },
+        {
+          "name": "apply_setup",
+          "cog": "Apply",
+          "type": "slash+prefix",
+          "description": "Configure the staff application system.",
+          "group": null
+        },
+        {
+          "name": "apply_status",
+          "cog": "Apply",
+          "type": "slash+prefix",
+          "description": "Check the status of your most recent staff application.",
+          "group": null
+        },
+        {
+          "name": "apply_toggle",
+          "cog": "Apply",
+          "type": "slash+prefix",
+          "description": "Open or close staff applications.",
+          "group": null
+        }
+      ]
+    },
+    {
+      "name": "Antinuke",
+      "commands": [
+        {
+          "name": "antinuke",
+          "cog": "Antinuke",
+          "type": "group",
+          "description": "Gogeta Anti-Nuke security control center",
+          "group": null
+        },
+        {
+          "name": "antinuke-incidents",
+          "cog": "Antinuke",
+          "type": "slash+prefix",
+          "description": "View Anti-Nuke incidents.",
+          "group": null
+        },
+        {
+          "name": "antinuke config",
+          "cog": "Antinuke",
+          "type": "slash",
+          "description": "Open the Anti-Nuke control center without running setup.",
+          "group": "antinuke"
+        },
+        {
+          "name": "antinuke disable",
+          "cog": "Antinuke",
+          "type": "slash",
+          "description": "Disable the Anti-Nuke firewall.",
+          "group": "antinuke"
+        },
+        {
+          "name": "antinuke setup",
+          "cog": "Antinuke",
+          "type": "slash",
+          "description": "Run the animated Anti-Nuke deployment wizard.",
+          "group": "antinuke"
+        },
+        {
+          "name": "antinuke whitelist",
+          "cog": "Antinuke",
+          "type": "slash",
+          "description": "Manage Anti-Nuke trust exemptions.",
+          "group": "antinuke"
+        }
+      ]
+    },
+    {
+      "name": "Giveaway",
+      "commands": [
+        {
+          "name": "gbonusrole",
+          "cog": "Giveaway",
+          "type": "prefix",
+          "description": "Manage giveaway bonus entry roles.",
+          "group": null
+        },
+        {
+          "name": "greroll",
+          "cog": "Giveaway",
+          "type": "slash+prefix",
+          "description": "Reroll a giveaway winner.",
+          "group": null
+        },
+        {
+          "name": "gstart",
+          "cog": "Giveaway",
+          "type": "prefix",
+          "description": "",
+          "group": null
+        },
+        {
+          "name": "gbonusrole add",
+          "cog": "Giveaway",
+          "type": "slash",
+          "description": "Give a role bonus giveaway entries.",
+          "group": "gbonusrole"
+        },
+        {
+          "name": "gbonusrole list",
+          "cog": "Giveaway",
+          "type": "slash",
+          "description": "View all giveaway bonus roles.",
+          "group": "gbonusrole"
+        },
+        {
+          "name": "gbonusrole remove",
+          "cog": "Giveaway",
+          "type": "slash",
+          "description": "Remove a giveaway bonus role.",
+          "group": "gbonusrole"
+        }
+      ]
+    },
+    {
+      "name": "Antibetray",
+      "commands": [
+        {
+          "name": "antibetray",
+          "cog": "Antibetray",
+          "type": "group",
+          "description": "Gogeta privileged-identity monitor",
+          "group": null
+        },
+        {
+          "name": "antibetray-incidents",
+          "cog": "Antibetray",
+          "type": "slash+prefix",
+          "description": "View recent Anti-Betray incidents.",
+          "group": null
+        },
+        {
+          "name": "antibetray config",
+          "cog": "Antibetray",
+          "type": "slash",
+          "description": "Open the Anti-Betray control center.",
+          "group": "antibetray"
+        },
+        {
+          "name": "antibetray setup",
+          "cog": "Antibetray",
+          "type": "slash",
+          "description": "Run Anti-Betray preflight and deploy the trust guard.",
+          "group": "antibetray"
+        },
+        {
+          "name": "antibetray whitelist",
+          "cog": "Antibetray",
+          "type": "slash",
+          "description": "Add or remove an explicitly watched user or role.",
+          "group": "antibetray"
+        }
+      ]
+    },
+    {
+      "name": "Tickets",
+      "commands": [
+        {
+          "name": "close",
+          "cog": "Tickets",
+          "type": "slash+prefix",
+          "description": "Close the current ticket.",
+          "group": null
+        },
+        {
+          "name": "ticket",
+          "cog": "Tickets",
+          "type": "prefix",
+          "description": "Configure and deploy the ticket system.",
+          "group": null
+        },
+        {
+          "name": "ticket panel",
+          "cog": "Tickets",
+          "type": "slash",
+          "description": "Post the 3-button ticket panel (Support / Reward / Staff Application) in a channel.",
+          "group": "ticket"
+        },
+        {
+          "name": "ticket settings",
+          "cog": "Tickets",
+          "type": "slash",
+          "description": "View the current ticket configuration.",
+          "group": "ticket"
+        },
+        {
+          "name": "ticket setup",
+          "cog": "Tickets",
+          "type": "slash",
+          "description": "Configure the category and staff role for one ticket type.",
+          "group": "ticket"
+        }
+      ]
+    },
+    {
+      "name": "EmojiVault",
+      "commands": [
+        {
+          "name": "emojivault",
+          "cog": "EmojiVault",
+          "type": "prefix",
+          "description": "Configure the server that receives copied-in emoji.",
+          "group": null
+        },
+        {
+          "name": "emojivault clear",
+          "cog": "EmojiVault",
+          "type": "slash",
+          "description": "Unset the emoji vault (must be run in the current vault server).",
+          "group": "emojivault"
+        },
+        {
+          "name": "emojivault set",
+          "cog": "EmojiVault",
+          "type": "slash",
+          "description": "Make this server the emoji vault target.",
+          "group": "emojivault"
+        },
+        {
+          "name": "emojivault status",
+          "cog": "EmojiVault",
+          "type": "slash",
+          "description": "Configure the server that receives copied-in emoji.",
+          "group": "emojivault"
+        }
+      ]
+    },
+    {
+      "name": "SecurityDashboard",
+      "commands": [
+        {
+          "name": "security-center",
+          "cog": "SecurityDashboard",
+          "type": "slash+prefix",
+          "description": "Open Gogeta's premium Discord security command center.",
+          "group": null
+        },
+        {
+          "name": "security-check",
+          "cog": "SecurityDashboard",
+          "type": "slash+prefix",
+          "description": "Run a permissions and hierarchy diagnostic.",
+          "group": null
+        },
+        {
+          "name": "security-status",
+          "cog": "SecurityDashboard",
+          "type": "slash+prefix",
+          "description": "Show a compact live security status.",
+          "group": null
+        }
+      ]
+    },
+    {
+      "name": "ServerLogs",
+      "commands": [
+        {
+          "name": "log",
+          "cog": "ServerLogs",
+          "type": "slash",
+          "description": "Set one channel for comprehensive premium server logging",
+          "group": null
+        },
+        {
+          "name": "logoff",
+          "cog": "ServerLogs",
+          "type": "slash",
+          "description": "Disable centralized server logging",
+          "group": null
+        },
+        {
+          "name": "logstatus",
+          "cog": "ServerLogs",
+          "type": "slash",
+          "description": "View the current logging status",
+          "group": null
+        }
+      ]
+    },
+    {
+      "name": "AutoRole",
+      "commands": [
+        {
+          "name": "autorole",
+          "cog": "AutoRole",
+          "type": "slash+prefix",
+          "description": "Set, view, or disable the role automatically given to new members.",
+          "group": null
+        },
+        {
+          "name": "autorole_off",
+          "cog": "AutoRole",
+          "type": "slash+prefix",
+          "description": "Disable automatic role assignment for new members.",
+          "group": null
+        }
+      ]
+    },
+    {
+      "name": "DMAnnounce",
+      "commands": [
+        {
+          "name": "dmannounce",
+          "cog": "DMAnnounce",
+          "type": "slash+prefix",
+          "description": "Send a confirmed announcement by DM to members of this server.",
+          "group": null
+        }
+      ]
+    },
+    {
+      "name": "EmbedBuilder",
+      "commands": [
+        {
+          "name": "embed",
+          "cog": "EmbedBuilder",
+          "type": "slash+prefix",
+          "description": "Build and send a custom embed with an interactive panel.",
+          "group": null
+        }
+      ]
+    },
+    {
+      "name": "GhostPing",
+      "commands": [
+        {
+          "name": "ghostping",
+          "cog": "GhostPing",
+          "type": "slash+prefix",
+          "description": "Ghost-ping new members into the channels you pick. Leave empty to see the current list.",
+          "group": null
+        }
+      ]
+    },
+    {
+      "name": "GogetasPet",
+      "commands": [
+        {
+          "name": "ai",
+          "cog": "GogetasPet",
+          "type": "slash+prefix",
+          "description": "Talk to Gogeta's Pet.",
+          "group": null
+        }
+      ]
+    },
+    {
+      "name": "Help",
+      "commands": [
+        {
+          "name": "help",
+          "cog": "Help",
+          "type": "slash+prefix",
+          "description": "List every command Gogeta offers, grouped by category.",
+          "group": null
+        }
+      ]
+    }
+  ]
+}

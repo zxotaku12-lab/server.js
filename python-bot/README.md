@@ -85,6 +85,21 @@ Script wahi rule use karta hai jo `bot.py` use karta hai (sirf `setup()` wali fi
 
 ---
 
+## Website (static docs + command explorer)
+
+`website/` pure static hai — koi build step nahi, koi dependency nahi:
+
+```bash
+python scripts/gen_site_data.py     # website/commands.json ko asli cogs se regenerate karo
+python3 -m http.server 8000 --directory website   # http://localhost:8000
+```
+
+Content: hero + feature cards, **command explorer** (search, type filter, cog sidebar, copy-to-clipboard), 4-step setup guide, aur **Connect** section jo Client ID + Guild ID se invite link banata hai (values sirf browser ke localStorage me rehti hain — token wahan kabhi nahi). GitHub Pages / Render static site / kisi bhi bucket pe seedha host ho jayega.
+
+`commands.json` generated hai, isliye cog add karne ke baad `gen_site_data.py` dobara chalao (CI isko verify karta hai).
+
+---
+
 ## Tests
 
 ```bash
