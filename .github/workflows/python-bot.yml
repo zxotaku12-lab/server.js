@@ -1,0 +1,51 @@
+name: Python bot (Gogeta's Pet)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "python-bot/**"
+      - ".github/workflows/python-bot.yml"
+  pull_request:
+    paths:
+      - "python-bot/**"
+      - ".github/workflows/python-bot.yml"
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: pytest + cog load (Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.11 = sabse purana supported; 3.13 pe audioop-lts backport khud install hota hai
+        # (requirements.txt me python_version marker laga hua hai).
+        python: ["3.11", "3.12", "3.13"]
+
+    defaults:
+      run:
+        working-directory: python-bot
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: python-bot/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt pytest
+
+      - name: Unit tests (router, automod, security cogs, ghostping, knowledge)
+        run: python -m pytest -q
+
+      - name: Offline cog load smoke test (token/network ke bina)
+        run: python tests/smoke_cogs.py
+
+      - name: Preflight (dummy token — sirf structure check)
+        run: TOKEN=ci-placeholder OPENAI_API_KEY=ci-placeholder python check_deploy.py
